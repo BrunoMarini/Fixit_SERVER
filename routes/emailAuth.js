@@ -43,15 +43,15 @@ module.exports.verifyEmail = (req, res) => {
         .findOne({ token: req.params.confirmationCode})
         .then((user) => {
             if(!user) {
-                return res.json(Utils.createResponseJson(Constants.HTTP_NOT_FOUNT, Constants.MESSAGE_CONFIRMATION_FAILED));
+                return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_CONFIRMATION_FAILED));
             }
 
             user.status = "Active";
             user.save((err) => {
                 if(err) {
-                    return res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, Constants.MESSAGE_INTERNAL_ERROR));
+                    return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
                 } else {
-                    return res.json(Utils.createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_SUCCESS));
+                    return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_SUCCESS));
                 }
             });
         })

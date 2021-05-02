@@ -1,7 +1,14 @@
 /* Auxiliar function to create response JSON */
-module.exports.createResponseJson = (retCode, retMessage) => {
-    return {
-        'code': retCode,
-        'message': retMessage
-    };
+module.exports.createJson = (...message) => {
+    switch (message.length) {
+        case 1:
+            return {
+                'message': message[0]
+            };
+        case 2:
+            return {
+                'message': message[0],
+                'token': message[1]
+            }
+    }
 };

@@ -21,7 +21,7 @@ router.post("/register", async (req, res) => {
         // Check if user already exist in DB
         if(existUser) {
             console.log("[Server] User alredy registered");
-            res.json(Utils.createResponseJson(Constants.HTTP_CONFLICT, Constants.MESSAGE_REGISTER_CONFLICT));
+            res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
             const tokenGen = new TokenGenerator();
             const user = new UserModel({
@@ -39,11 +39,11 @@ router.post("/register", async (req, res) => {
             // Sending email confirmation
             emailAuth.sendConfirmationEmail(saved.name, saved.email, saved.token);
 
-            res.json(Utils.createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_PENDING));
+            res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_PENDING));
         }
     } catch (err) {
         console.log(err);
-        res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, err));
+        res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
     }
 });
 
@@ -54,15 +54,15 @@ router.post("/login", async (req, res) => {
 
         if(user && user.password == req.body.password) {
             if(user.status = "Active") {
-                return res.json(Utils.createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_LOGIN_SUCCESS));
+                return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, user.token));
             }
-            return res.json(Constants.HTTP_FORBIDDEN, Constants.MESSAGE_INTERNAL_ERROR);
+            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
         } else {
-            return res.json(Utils.createResponseJson(Constants.HTTP_NOT_FOUNT, Constants.MESSAGE_REGISTER_PENDING));
+            return res.status(Constants.HTTP_NOT_FOUNT, ).json(Utils.createJson(Constants.MESSAGE_WRONG_EMAIL_PASS));
         }
     } catch (err) {
-    console.log(err);
-    return res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, err));
+        console.log(err);
+        return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
     }
 });
 

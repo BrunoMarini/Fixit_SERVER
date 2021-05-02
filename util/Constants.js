@@ -7,12 +7,14 @@ const HTTP_CONFLICT = 409;
 const HTTP_INTERNAL_SERVER_ERROR = 500;
 
 // Messages
-const MESSAGE_REGISTER_SUCCESS = "Usuario foi registrado com sucesso!";
-const MESSAGE_LOGIN_SUCCESS = "Usuario foi logado com sucesso!";
-const MESSAGE_REGISTER_PENDING = "Usuario foi aguardando confirmacao por email!";
+const MESSAGE_REGISTER_SUCCESS = "Usuario foi autenticado com sucesso!";
+const MESSAGE_LOGIN_SUCCESS = "Usuario logado com sucesso!";
+const MESSAGE_REGISTER_PENDING = "Usuario salvo! Aguardando confirmacao por email!";
 const MESSAGE_REGISTER_CONFLICT = "Usuario já cadastrado na base de dados!";
-const MESSAGE_CONFIRMATION_FAILED = "Usuario não foi encontrado";
-const MESSAGE_INTERNAL_ERROR = "Erro interno no servidor. Usuario não autenticado!";
+const MESSAGE_CONFIRMATION_FAILED = "Usuario não encontrado!";
+const MESSAGE_INTERNAL_ERROR = "Erro interno no servidor!";
+const MESSAGE_NOT_AUTHENTICATED = "Usuario não autenticado!";
+const MESSAGE_WRONG_EMAIL_PASS = "Email e/ou senha incorreto(s)!"
 
 module.exports = {
     HTTP_OK:                     HTTP_OK,
@@ -26,5 +28,7 @@ module.exports = {
     MESSAGE_REGISTER_PENDING:    MESSAGE_REGISTER_PENDING,
     MESSAGE_REGISTER_CONFLICT:   MESSAGE_REGISTER_CONFLICT,
     MESSAGE_CONFIRMATION_FAILED: MESSAGE_CONFIRMATION_FAILED,
-    MESSAGE_INTERNAL_ERROR:      MESSAGE_INTERNAL_ERROR
+    MESSAGE_INTERNAL_ERROR:      MESSAGE_INTERNAL_ERROR,
+    MESSAGE_NOT_AUTHENTICATED:   MESSAGE_NOT_AUTHENTICATED,
+    MESSAGE_WRONG_EMAIL_PASS:    MESSAGE_WRONG_EMAIL_PASS
 }
