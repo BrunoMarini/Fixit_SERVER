@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Utils = require('../util/Utils');
 const Constants = require('../util/Constants');
 const emailAuth = require('./emailAuth');
 const UserModel = require('../models/userModel');
@@ -20,7 +21,7 @@ router.post("/register", async (req, res) => {
         // Check if user already exist in DB
         if(Object.keys(existUser).length > 0) {
             console.log("[Server] User alredy registered");
-            res.json(createResponseJson(Constants.HTTP_CONFLICT, Constants.MESSAGE_REGISTER_CONFLICT));
+            res.json(Utils.createResponseJson(Constants.HTTP_CONFLICT, Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
             const tokenGen = new TokenGenerator();
             const user = new UserModel({
@@ -38,20 +39,12 @@ router.post("/register", async (req, res) => {
             // Sending email confirmation
             emailAuth.sendConfirmationEmail(saved.name, saved.email, saved.token);
 
-            res.json(createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_PENDING));
+            res.json(Utils.createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_PENDING));
         }
     } catch (err) {
         console.log(err);
-        res.json(createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, err));
+        res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, err));
     }
 });
-
-/* Auxiliar function to create response JSON */
-function createResponseJson (retCode, retMessage) {
-    return {
-        'code': retCode,
-        'message': retMessage
-    };
-}
 
 module.exports = router;

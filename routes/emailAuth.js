@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const UserModel = require('../models/userModel');
 const Constants = require('../util/Constants');
+const Utils = require('../util/Utils');
 
 module.exports.sendConfirmationEmail  = function(name, email, confirmationCode) {
     console.log("[Server] Send confirmation email!");
@@ -42,23 +43,15 @@ module.exports.verifyEmail = (req, res) => {
         .findOne({ token: req.params.confirmationCode})
         .then((user) => {
             if(!user) {
-                return res.json(createResponseJson(Constants.HTTP_NOT_FOUNT, Constants.MESSAGE_CONFIRMATION_FAILED));
+                return res.json(Utils.createResponseJson(Constants.HTTP_NOT_FOUNT, Constants.MESSAGE_CONFIRMATION_FAILED));
             }
 
             user.status = "Active";
             user.save((err) => {
                 if(err) {
-                    return res.json(createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, Constants.MESSAGE_INTERNAL_ERROR));
+                    return res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, Constants.MESSAGE_INTERNAL_ERROR));
                 }
             });
         })
         .catch((e) => console.log("Error", e));  
 };
-
-/* Auxiliar function to create response JSON */
-function createResponseJson (retCode, retMessage) {
-    return {
-        'code': retCode,
-        'message': retMessage
-    };
-}
