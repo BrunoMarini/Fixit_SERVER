@@ -1,12 +1,14 @@
 // Response
 const HTTP_OK = 200; 
 const HTTP_UNAUTHORIZED = 401;
+const HTTP_FORBIDDEN = 403;
 const HTTP_NOT_FOUNT = 404;
 const HTTP_CONFLICT = 409;
 const HTTP_INTERNAL_SERVER_ERROR = 500;
 
 // Messages
 const MESSAGE_REGISTER_SUCCESS = "Usuario foi registrado com sucesso!";
+const MESSAGE_LOGIN_SUCCESS = "Usuario foi logado com sucesso!";
 const MESSAGE_REGISTER_PENDING = "Usuario foi aguardando confirmacao por email!";
 const MESSAGE_REGISTER_CONFLICT = "Usuario já cadastrado na base de dados!";
 const MESSAGE_CONFIRMATION_FAILED = "Usuario não foi encontrado";
@@ -15,10 +17,12 @@ const MESSAGE_INTERNAL_ERROR = "Erro interno no servidor. Usuario não autentica
 module.exports = {
     HTTP_OK:                     HTTP_OK,
     HTTP_UNAUTHORIZED:           HTTP_UNAUTHORIZED,
+    HTTP_FORBIDDEN:              HTTP_FORBIDDEN,
     HTTP_NOT_FOUNT:              HTTP_NOT_FOUNT,
     HTTP_CONFLICT:               HTTP_CONFLICT,
     HTTP_INTERNAL_SERVER_ERROR:  HTTP_INTERNAL_SERVER_ERROR,
     MESSAGE_REGISTER_SUCCESS:    MESSAGE_REGISTER_SUCCESS,
+    MESSAGE_LOGIN_SUCCESS:       MESSAGE_LOGIN_SUCCESS,
     MESSAGE_REGISTER_PENDING:    MESSAGE_REGISTER_PENDING,
     MESSAGE_REGISTER_CONFLICT:   MESSAGE_REGISTER_CONFLICT,
     MESSAGE_CONFIRMATION_FAILED: MESSAGE_CONFIRMATION_FAILED,

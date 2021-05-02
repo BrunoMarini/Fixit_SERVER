@@ -50,6 +50,8 @@ module.exports.verifyEmail = (req, res) => {
             user.save((err) => {
                 if(err) {
                     return res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, Constants.MESSAGE_INTERNAL_ERROR));
+                } else {
+                    return res.json(Utils.createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_SUCCESS));
                 }
             });
         })

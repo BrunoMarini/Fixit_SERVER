@@ -13,13 +13,13 @@ router.post("/register", async (req, res) => {
         console.log("[Server] Register new user");
 
         // Search for users with the same email or phone 
-        const existUser = await UserModel.find().or([
+        const existUser = await UserModel.findOne().or([
             { email: req.body.email},
             { phone: req.body.phone}
         ]);
 
         // Check if user already exist in DB
-        if(Object.keys(existUser).length > 0) {
+        if(existUser) {
             console.log("[Server] User alredy registered");
             res.json(Utils.createResponseJson(Constants.HTTP_CONFLICT, Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
@@ -44,6 +44,25 @@ router.post("/register", async (req, res) => {
     } catch (err) {
         console.log(err);
         res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, err));
+    }
+});
+
+router.post("/login", async (req, res) => {
+    console.log("[Server] User login");
+    try {
+        const user = await UserModel.findOne({email: req.body.email});
+
+        if(user && user.password == req.body.password) {
+            if(user.status = "Active") {
+                return res.json(Utils.createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_LOGIN_SUCCESS));
+            }
+            return res.json(Constants.HTTP_FORBIDDEN, Constants.MESSAGE_INTERNAL_ERROR);
+        } else {
+            return res.json(Utils.createResponseJson(Constants.HTTP_NOT_FOUNT, Constants.MESSAGE_REGISTER_PENDING));
+        }
+    } catch (err) {
+    console.log(err);
+    return res.json(Utils.createResponseJson(Constants.HTTP_INTERNAL_SERVER_ERROR, err));
     }
 });
 
