@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Constants = require('../util/Constants');
+const emailAuth = require('./emailAuth');
 const UserModel = require('../models/userModel');
 const TokenGenerator = require ('uuid-token-generator');
+
 
 /* Request to register a new user */
 router.post("/register", async (req, res) => {
@@ -18,7 +20,7 @@ router.post("/register", async (req, res) => {
         // Check if user already exist in DB
         if(Object.keys(existUser).length > 0) {
             console.log("[Server] User alredy registered");
-            res.json(createResponseJson(Constants.HTTP_CONFLICT, Constants.MESSAGE_CONFLICT));
+            res.json(createResponseJson(Constants.HTTP_CONFLICT, Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
             const tokenGen = new TokenGenerator();
             const user = new UserModel({
@@ -29,9 +31,14 @@ router.post("/register", async (req, res) => {
                 token: tokenGen.generate()
             });
 
+            // Saving user in DB
             const saved = await user.save();
             console.log("[Server] New user registered!");
-            res.json(createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_SUCCESS));
+
+            // Sending email confirmation
+            emailAuth.sendConfirmationEmail(saved.name, saved.email, saved.token);
+
+            res.json(createResponseJson(Constants.HTTP_OK, Constants.MESSAGE_REGISTER_PENDING));
         }
     } catch (err) {
         console.log(err);

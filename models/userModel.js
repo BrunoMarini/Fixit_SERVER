@@ -7,7 +7,7 @@ const UserSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
@@ -17,8 +17,14 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    status: {
+        type: String,
+        enum: ['Pending', 'Active'],
+        default: 'Pending'
+    },
     token: {
         type: String,
+        unique: true,
         required: true
     }
 });

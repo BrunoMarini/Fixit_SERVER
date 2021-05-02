@@ -11,6 +11,9 @@ app.use(express.json());
 const userAuth = require('./routes/userPost');
 app.use('/user', userAuth);
 
+const emailAuth = require('./routes/emailAuth');
+app.get("/confirm/:confirmationCode", emailAuth.verifyEmail);
+
 /* Connect to DataBase */
 let dbUrl = "mongodb+srv://" + process.env.MONGO_USER + ":" + process.env.MONGO_PASS + "@" + process.env.MONGO_URL + "/" + process.env.MONGO_DB_NAME + "?retryWrites=true&w=majority";
 mongoose.connect(
