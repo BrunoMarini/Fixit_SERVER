@@ -14,6 +14,12 @@ app.use('/user', userAuth);
 const emailAuth = require('./routes/emailAuth');
 app.get("/confirm/:confirmationCode", emailAuth.verifyEmail);
 
+const reportPost = require('./routes/reportPost');
+app.use('/report', reportPost);
+
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+
 /* Connect to DataBase */
 let dbUrl = "mongodb+srv://" + process.env.MONGO_USER + ":" + process.env.MONGO_PASS + "@" + process.env.MONGO_URL + "/" + process.env.MONGO_DB_NAME + "?retryWrites=true&w=majority";
 mongoose.connect(
