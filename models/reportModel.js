@@ -1,8 +1,26 @@
 const mongoose = require('mongoose');
 
 const ReportSchema = mongoose.Schema({
-    name: String,
-    desc: String,
+    type: {
+        type: String,
+        enum: ['Depredation', 'Road', 'Leak', 'Garbage', 'Flood'],
+        required: true
+    },
+    description: {
+        type: String,
+        maxLength: 500
+    },
+    position: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     image: {
         type: String,
         required: true

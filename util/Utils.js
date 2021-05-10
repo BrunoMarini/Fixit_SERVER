@@ -1,6 +1,8 @@
 const UserModel = require('../models/userModel');
 
-/* Auxiliar function to create response JSON */
+/* 
+ * Auxiliar function to create response JSON 
+ */
 module.exports.createJson = (...message) => {
     switch (message.length) {
         case 1:
@@ -31,4 +33,19 @@ module.exports.isUserValid = async (req) => {
         return (user ? user : undefined);
     } 
     return undefined;
+}
+
+/* 
+ * Get formatted date string from current time
+ * 
+ * FROM: yyyy-mm-ddThh:mm:ss.msmsZ
+ * TO:   yyyy-mm-dd_hh.mm.ss_name
+ */       
+module.exports.getFormattedDate = () => {
+    var date = new Date();
+    date.toLocaleString();
+    date = date.toISOString();     
+    date = date.split('T').join('_').split('Z').join('.').split('.')[0];
+    date = date.split(':').join('.');
+    return date;
 }
