@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
             }
             return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
         } else {
-            return res.status(Constants.HTTP_NOT_FOUNT, ).json(Utils.createJson(Constants.MESSAGE_WRONG_EMAIL_PASS));
+            return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_WRONG_EMAIL_PASS));
         }
     } catch (err) {
         console.log(err);
