@@ -17,10 +17,10 @@ module.exports.createJson = (...message) => {
     }
 };
 
-/*
+/**
  * Auxiliar async function to verify if user is valid 
  * 
- * @param req to retrieve Bearer token
+ * @param User request req to retrieve Bearer token
  * 
  * @return current user or undefined in case of no user
  */
@@ -35,11 +35,13 @@ module.exports.isUserValid = async (req) => {
     return undefined;
 }
 
-/* 
+/**
  * Get formatted date string from current time
  * 
  * FROM: yyyy-mm-ddThh:mm:ss.msmsZ
  * TO:   yyyy-mm-dd_hh.mm.ss_name
+ * 
+ * @returns formatted date
  */       
 module.exports.getFormattedDate = () => {
     var date = new Date();
@@ -49,3 +51,42 @@ module.exports.getFormattedDate = () => {
     date = date.split(':').join('.');
     return date;
 }
+
+/**
+ * Return reported points in MapsBox format in order to point in the map
+ *
+ * @param A list of reported points
+ *
+ * @returns The points in MapBox structure
+ */
+module.exports.formatPoints = (point) => {
+    var position  = {};
+    var type = 'FeatureCollection';
+    var features = [];
+    position.type = type;
+    position.features = features;
+
+    for(var i = 0; i < point.length; i++) {
+        var features = buildMapboxStructure(point[i].position.coordinates);
+        position.features.push(features);
+    }
+
+    console.log("Teste: " + JSON.stringify(position, null, 4));
+    return position;
+}
+
+function buildMapboxStructure(latLong) {
+    var json =
+    {
+        type: 'Feature',
+        geometry: {
+        type: 'Point',
+        coordinates: [latLong[1], latLong[0]]
+        },
+        properties: {
+        title: 'Mapbox',
+        description: 'Washington, D.C.'
+        }
+    }
+    return json
+};

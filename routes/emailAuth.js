@@ -16,11 +16,11 @@ module.exports.sendConfirmationEmail  = function(name, email, confirmationCode) 
     });
 
     // Set localhost or server for test purpose
-    let port = process.env.PORT;
-    let link = "https://fixit-city.herokuapp.com/confirm/" + confirmationCode; 
-    if (port == undefined){
-        port = 3030;
-        link = "http://localhost:" + port + "/confirm/" + confirmationCode;        
+    var link = '';
+    if(process.env.NODE_ENV == 'prod') {
+        link = "https://fixit-city.herokuapp.com/confirm/" + confirmationCode;
+    } else {
+        link = "http://localhost:3030/confirm/" + confirmationCode;
     }
 
     // Sending the email
