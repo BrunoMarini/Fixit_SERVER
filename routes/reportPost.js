@@ -5,35 +5,10 @@ const Constants = require('../util/Constants');
 const ReportModel = require('../models/reportModel');
 const fs = require('fs');
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'upload/');
-    },
-    filename: function(req, file, cb) {
-        const date = Utils.getFormattedDate();
-        const name = date + "_" + file.originalname;
-        cb(null, name);
-    }
-});
-
-const upload = multer({ 
-    storage: storage, 
-    limits: { 
-        fileSize: 1024 * 1024 * 5 //Files up to 5 Mb
-    }
-});
-
-var type = upload.single('reportImg');
-
-router.post("/new", type, async (req, res) => {
+router.post("/new", async (req, res) => {
     const user = await Utils.isUserValid(req);
     
-    console.log("DEBUG: " + req.file);
-    console.log("DEBUG: " + req.file.path);
-    
     if(!user) {
-        fs.unlinkSync(req.file.path);
         console.log("[Server] Unvalid user tried to create a report!");
         return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
@@ -45,7 +20,7 @@ router.post("/new", type, async (req, res) => {
         type: req.body.type,
         description: req.body.description,
         position: position,
-        image: req.file.path
+        image: req.body.image
     });
     
     const saved = await report.save();
