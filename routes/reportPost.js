@@ -28,6 +28,10 @@ var type = upload.single('reportImg');
 
 router.post("/new", type, async (req, res) => {
     const user = await Utils.isUserValid(req);
+    
+    console.log("DEBUG: " + req.file);
+    console.log("DEBUG: " + req.file.path);
+    
     if(!user) {
         fs.unlinkSync(req.file.path);
         console.log("[Server] Unvalid user tried to create a report!");
@@ -54,8 +58,9 @@ router.post("/new", type, async (req, res) => {
 });
 
 router.get("/get", async (req, res) => {
-    //fs.read
-    //read.pipe(img)
+    fs.readdirSync(__dirname + '/../upload').forEach(file => {
+        console.log('DEBUG: ' + file);
+    });
 });
 
 module.exports = router;
