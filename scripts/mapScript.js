@@ -1,29 +1,68 @@
-function loadMap() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYmdtYXJpbmkiLCJhIjoiY2tvanpidnZyMDR5YzJwbzhsaG94YWRzdiJ9.kpBGNbJAsIPNv5jjJX2mPQ';//'pk.eyJ1IjoiYmdtYXJpbmkiLCJhIjoiY2tvanpidnZyMDR5YzJwbzhsaG94YWRzdiJ9.kpBGNbJAsIPNv5jjJX2mPQ';
-            
-    if('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
+let map;
+
+function loadFunc() {
+    // Create the script tag, set the appropriate attributes
+    var script = document.createElement('script');
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyB-k_KvuaBxPxRoGx-Gkkaw7e4bdCWyRjs&callback=initMap';
+    script.async = true;
+
+    // Attach your callback function to the `window` object
+    window.initMap = function() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 8
         });
-    } else {
-        console.log("Not able to get current position");
-    }
 
-    var map = new mapboxgl.Map({
-                container: 'map', // container ID
-                style: 'mapbox://styles/mapbox/streets-v11', // style URL
-                center: [0,0], // starting position [lng, lat]
-                zoom: 0 // starting zoom
+        addPanToCurrentLocationButton();
+        loadMarkers();
+    };
+
+    // Append the 'script' element to 'head'
+    document.head.appendChild(script);
+}
+
+// Add button "Go to current locaiton"
+function addPanToCurrentLocationButton() {
+    infoWindow = new google.maps.InfoWindow();
+    const locationButton = document.createElement("button");
+    locationButton.textContent = "Ir a posição atual";
+    locationButton.classList.add("custom-map-control-button");
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+    locationButton.addEventListener("click", () => {
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                infoWindow.setPosition(pos);
+                infoWindow.setContent("Location found.");
+                infoWindow.open(map);
+                map.setCenter(pos);
+            }, () => {
+                handleLocationError(true, infoWindow, map.getCenter());
+            }
+        );
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
     });
-    // Add geolocate control to the map.
-    map.addControl(
-        new mapboxgl.GeolocateControl({
-            positionOptions: {
-                enableHighAccuracy: true
-            },
-            trackUserLocation: true
-        })
-    );
+}
 
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(
+      browserHasGeolocation
+        ? "Error: The Geolocation service failed."
+        : "Error: Your browser doesn't support geolocation."
+    );
+    infoWindow.open(map);
+}
+
+function loadMarkers() {
     var req = new XMLHttpRequest();
     req.open('GET', '/map/getReports', true);
     req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
@@ -31,21 +70,29 @@ function loadMap() {
 
     req.onreadystatechange = function() {
         if (req.readyState == 4 && req.status == 200) { 
-            var response = req.responseText;
-            
-            var geojson = JSON.parse(response);
-            // add markers to map
-            geojson.features.forEach(function(marker) {
+            var response = JSON.parse(req.responseText);
+            for(i = 0; i < response.length; i++) {
+                const latLng = new google.maps.LatLng(response[i][1], response[i][2]);
+                const mapOpt = {
+                    center: latLng
+                }
+                const marker = new google.maps.Marker({
+                    position: latLng,
+                    title: response[i][0],
+                });
 
-            // create a HTML element for each feature
-            var el = document.createElement('div');
-            el.className = 'marker';
-        
-            // make a marker for each feature and add to the map
-            new mapboxgl.Marker(el)
-                .setLngLat(marker.geometry.coordinates)
-                .addTo(map);
-            });
+                const infoWindow = new google.maps.InfoWindow({
+                    content: response[i][0]
+                });
+
+                marker.addListener('click', () => {
+                    map.setZoom(8);
+                    map.setCenter(marker.getPosition());
+                    infoWindow.open(marker.get('map'), marker);
+                });
+
+                marker.setMap(map);
+            }
         }
     }
 }

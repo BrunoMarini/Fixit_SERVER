@@ -59,34 +59,18 @@ module.exports.getFormattedDate = () => {
  *
  * @returns The points in MapBox structure
  */
-module.exports.formatPoints = (point) => {
-    var position  = {};
-    var type = 'FeatureCollection';
-    var features = [];
-    position.type = type;
-    position.features = features;
+module.exports.formatPoints = (reports) => {
+    var locations = [];
 
-    for(var i = 0; i < point.length; i++) {
-        var features = buildMapboxStructure(point[i].position.coordinates);
-        position.features.push(features);
+    for(var i = 0; i  < reports.length; i++) {
+        var p = [];
+        latLong = reports[i].position.coordinates;
+        
+        p.push(reports[i].type);
+        p.push(latLong[0]);
+        p.push(latLong[1]);
+
+        locations.push(p);
     }
-
-    console.log("Teste: " + JSON.stringify(position, null, 4));
-    return position;
+    return locations;
 }
-
-function buildMapboxStructure(latLong) {
-    var json =
-    {
-        type: 'Feature',
-        geometry: {
-        type: 'Point',
-        coordinates: [latLong[1], latLong[0]]
-        },
-        properties: {
-        title: 'Mapbox',
-        description: 'Washington, D.C.'
-        }
-    }
-    return json
-};
