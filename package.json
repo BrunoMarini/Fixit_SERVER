@@ -1,0 +1,31 @@
+{
+  "name": "fixit_server",
+  "version": "1.0.0",
+  "description": "TCC project",
+  "main": "server.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "mapbox-gl": "^2.2.0",
+    "mongoose": "^5.12.7",
+    "nodemailer": "^6.6.0",
+    "uuid-token-generator": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrunoMarini/Fixit_SERVER.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrunoMarini/Fixit_SERVER/issues"
+  },
+  "homepage": "https://github.com/BrunoMarini/Fixit_SERVER#readme"
+}
