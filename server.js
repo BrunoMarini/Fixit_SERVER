@@ -14,7 +14,13 @@ app.use(express.static('scripts'));
 //app.all('/img/mapbox-icon.png', (req, res) => { res.sendFile(fetchFile("/public/img/mapbox-icon.png")); });
 
 /* HTML requests */
-app.get('/', (req, res) => { res.sendFile(fetchFile('/www/home.html')) });
+app.get('/', (req, res) => { 
+    res.render(fetchFile('/www/home.html'),
+    { 
+        token: process.env.MAPS_TOKEN,
+        env: process.env.NODE_ENV  
+    }) 
+});
 
 /* Import default routes */
 const mapPost = require('./routes/mapPost');

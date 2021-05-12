@@ -1,9 +1,9 @@
 let map;
 
-function loadFunc() {
+function loadFunc(token, env) {
     // Create the script tag, set the appropriate attributes
     var script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyB-k_KvuaBxPxRoGx-Gkkaw7e4bdCWyRjs&callback=initMap';
+    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + token + '&callback=initMap';
     script.async = true;
 
     // Attach your callback function to the `window` object
