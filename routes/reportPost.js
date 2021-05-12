@@ -29,6 +29,7 @@ var type = upload.single('reportImg');
 router.post("/new", type, async (req, res) => {
     const user = await Utils.isUserValid(req);
     
+    console.log("DEBUG TEST");
     console.log("DEBUG: " + req.file);
     console.log("DEBUG: " + req.file.path);
     
