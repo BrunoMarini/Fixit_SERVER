@@ -5,6 +5,7 @@ const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
 
 router.get('/getReports', async (req, res) => {
+    console.log("[Server] getReports");
     const reports = await ReportModel.find();
     
     if(reports) {

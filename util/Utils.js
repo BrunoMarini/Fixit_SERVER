@@ -25,6 +25,7 @@ module.exports.createJson = (...message) => {
  * @return current user or undefined in case of no user
  */
 module.exports.isUserValid = async (req) => {
+    console.log("[Server] isUserValid");
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {      
         const user = await UserModel.findOne().and([ 
             {token: req.headers.authorization.split(' ')[1]},
