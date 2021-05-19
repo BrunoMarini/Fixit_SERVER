@@ -2,9 +2,81 @@ body {
     margin: 0;
     padding: 0;
 }
+
 #map {
     position: absolute; 
     top: 0;
     bottom: 0; 
     width: 100%; 
+}
+
+#btnClose {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 10px;
+    height: 40px;
+}
+
+
+#sideBar {
+    text-align: center;
+    position: fixed;
+    right: 5%;
+    border-radius: 10px;
+    width: 400px;
+    height: 700px;
+    z-index: 3000;
+    margin: 0;
+    overflow: auto;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    background-color: black;
+    /*visibility: hidden;*/
+}
+
+#sideBarTitle {
+    color: white;
+    text-align: left;
+}
+
+#images {
+    overflow: auto;
+}
+
+.container:hover .overlay {
+    width: 100%;
+    left: 0;
+}
+
+/* Mouse over effect */
+.image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 100%;
+    right: 0;
+    background-color: #008CBA;
+    overflow: hidden;
+    width: 0;
+    height: 100%;
+    transition: .5s ease;
+}
+
+.text {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
 }

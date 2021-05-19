@@ -7,6 +7,17 @@
         <link href='/resources/home.css' rel="stylesheet">
     </head>
     <body>
+
+        <div id="sideBar">
+            <div>
+                <button id="btnClose"> Fechar Infos </button>
+                <ul>
+                    <p id="sideBarTitle"> Reportes Encontrados! </p>
+                </ul>
+            </div>
+            <div id="images"></div>
+        </div>
+
         <div id='map' style='position: absolute; top: 0px; bottom: 0px; width: 100%;'></div>
 
         <script>
@@ -14,5 +25,6 @@
             var env = "<%= env %>";
             loadFunc(token, env);
         </script>
+
     </body>
 </html>

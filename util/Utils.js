@@ -60,16 +60,17 @@ module.exports.getFormattedDate = () => {
  *
  * @returns The points in MapBox structure
  */
-module.exports.formatPoints = (reports) => {
+module.exports.formatPositions = (reports) => {
    var locations = [];
-
    for(var i = 0; i  < reports.length; i++) {
        var p = [];
-       latLong = reports[i].position.coordinates;
-       
-       p.push(reports[i].type);
-       p.push(latLong[0]);
-       p.push(latLong[1]);
+        const latLong = reports[i].location.coordinates;
+
+        p.push(reports[i].type);
+        p.push(latLong[0]);
+        p.push(latLong[1]);
+        p.push(reports[i]._id);
+        p.push(reports[i].image);
 
        locations.push(p);
    }
