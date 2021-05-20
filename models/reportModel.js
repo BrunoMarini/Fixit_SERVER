@@ -16,6 +16,10 @@ const ReportSchema = mongoose.Schema({
     reportId: {
         type: String,
         required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 

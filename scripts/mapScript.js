@@ -88,6 +88,7 @@ function loadMarkers() {
 
                 marker.addListener('click', () => {
                     clearCurrentSideBar();
+                    sideBarVisible(true);
                     map.setZoom(13);
                     map.setCenter(marker.getPosition());
                     infoWindow.open(marker.get('map'), marker);
@@ -97,6 +98,11 @@ function loadMarkers() {
             }
         }
     }
+}
+
+function sideBarVisible(visible) {
+    const sideBar = document.getElementById("sideBar");
+    sideBar.style.visibility = (visible ? "visible" : "hidden");
 }
 
 function clearCurrentSideBar() {
