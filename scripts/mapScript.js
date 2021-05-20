@@ -11,7 +11,12 @@ function loadFunc(token, env) {
     window.initMap = function() {
         map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: -34.397, lng: 150.644 },
-            zoom: 8
+            zoom: 8,
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                position: google.maps.ControlPosition.TOP_RIGHT
+            }
         });
 
         addPanToCurrentLocationButton();

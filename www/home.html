@@ -4,9 +4,19 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script><script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
         <script src='/mapScript.js'></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
-        <link href='/resources/home.css' rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400"><link href='/resources/home.css' rel="stylesheet">
     </head>
     <body>
+
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">Meu</a>
+            <a href="#">Nome</a>
+            <a href="#">E</a>
+            <div style="height: 75%;"></div>
+            <a href="#">Admin</a>
+        </div>
+        <span id="hamburguerMenu" onclick="openNav()"> &#9776; Menu </span>
 
         <div id="sideBar">
             <div>
@@ -24,6 +34,18 @@
             var token = "<%= token %>";
             var env = "<%= env %>";
             loadFunc(token, env);
+        </script>
+
+        <script>
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("hamburguerMenu").style.visibility = "hidden";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("hamburguerMenu").style.visibility = "visible";
+            }
         </script>
 
     </body>
