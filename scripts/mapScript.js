@@ -75,9 +75,13 @@ function loadMarkers() {
             for(i = 0; i < response.length; i++) {
                 const latLng = new google.maps.LatLng(response[i][1], response[i][2]);
 
+                const markerUrl = chooseMarkerColor(response[i][0]);
                 const marker = new google.maps.Marker({
                     position: latLng,
                     title: response[i][0],
+                    icon: {
+                        url: markerUrl
+                    }
                 });
 
                 const infoWindow = new google.maps.InfoWindow({
@@ -98,6 +102,18 @@ function loadMarkers() {
             }
         }
     }
+}
+
+function chooseMarkerColor(type) {
+    var dot;
+    switch (type) {
+        case 'Depredation': dot = 'blue';     break;
+        case 'Road':        dot = 'green';  break;
+        case 'Leak':        dot = 'pink';   break;
+        case 'Garbage':     dot = 'yellow'; break;
+        case 'Flood':       dot = 'purple'; break;
+    }
+    return ('http://maps.google.com/mapfiles/ms/icons/' + dot + '-dot.png');
 }
 
 function sideBarVisible(visible) {
