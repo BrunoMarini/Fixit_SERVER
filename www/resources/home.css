@@ -58,32 +58,33 @@ body {
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
-  }
+}
 
 .sidenav a {
-padding: 8px 8px 8px 32px;
-text-decoration: none;
-font-size: 25px;
-color: #000000;
-display: block;
-transition: 0.3s;
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 25px;
+    color: #000000;
+    display: block;
+    transition: 0.3s;
 }
 
 .sidenav a:hover {
-color: rgb(0, 145, 255);
+    color: rgb(0, 145, 255);
 }
 
 .sidenav .closebtn {
-position: absolute;
-top: 0;
-right: 25px;
-font-size: 36px;
-margin-left: 50px;
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 50px;
+    margin-left: 50px;
 }
 
 @media screen and (max-height: 450px) {
-.sidenav {padding-top: 15px;}
-.sidenav a {font-size: 18px;}
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
 }
 
 #hamburguerMenu {

@@ -63,16 +63,15 @@ module.exports.getFormattedDate = () => {
 module.exports.formatPositions = (reports) => {
    var locations = [];
    for(var i = 0; i  < reports.length; i++) {
-       var p = [];
         const latLong = reports[i].location.coordinates;
-
-        p.push(reports[i].type);
-        p.push(latLong[0]);
-        p.push(latLong[1]);
-        p.push(reports[i]._id);
-        p.push(reports[i].image);
-
-       locations.push(p);
+        var positionInfo = {
+            type: reports[i].type,
+            lat: latLong[0],
+            long: latLong[1],
+            id: reports[i]._id,
+            length: reports[i].reports.length
+        }
+       locations.push(positionInfo);
    }
    return locations;
 }

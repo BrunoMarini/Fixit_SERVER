@@ -1,30 +1,48 @@
-let map;
+let map, heatMap;
 let pointInfo;
+let points;
+let markers = [];
 
 function loadFunc(token, env) {
     // Create the script tag, set the appropriate attributes
     var script = document.createElement('script');
-    script.src = 'https://maps.googleapis.com/maps/api/js?key=' + token + '&callback=initMap';
+    script.src="https://maps.googleapis.com/maps/api/js?key=" + token + "&libraries=visualization&callback=initMap";
     script.async = true;
+    // Append the 'script' element to 'head'
+    document.head.appendChild(script);
 
     // Attach your callback function to the `window` object
     window.initMap = function() {
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 8,
-            mapTypeControl: true,
-            mapTypeControlOptions: {
-                style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-                position: google.maps.ControlPosition.TOP_RIGHT
+        var req = new XMLHttpRequest();
+        req.open('GET', '/map/getReports', true);
+        req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
+        req.send();
+
+        req.onreadystatechange = function() {
+            if (req.readyState == 4 && req.status == 200) { 
+                var response = JSON.parse(req.responseText);
+                points = response;
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: -34.397, lng: 150.644 },
+                    zoom: 8,
+                    mapTypeControl: true,
+                    mapTypeControlOptions: {
+                        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                        position: google.maps.ControlPosition.TOP_RIGHT
+                    }
+                });
+
+                heatMap = new google.maps.visualization.HeatmapLayer({
+                    data: getHeatMapData(),
+                    map: null
+                });
+
+                addPanToCurrentLocationButton();
+                loadMarkers();
             }
-        });
-
-        addPanToCurrentLocationButton();
-        loadMarkers();
+        }
     };
-
-    // Append the 'script' element to 'head'
-    document.head.appendChild(script);
 }
 
 // Add button "Go to current locaiton"
@@ -69,43 +87,34 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 }
 
 function loadMarkers() {
-    var req = new XMLHttpRequest();
-    req.open('GET', '/map/getReports', true);
-    req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
-    req.send();
+    for(i = 0; i < points.length; i++) {
+        const latLng = new google.maps.LatLng(points[i].lat, points[i].long);
 
-    req.onreadystatechange = function() {
-        if (req.readyState == 4 && req.status == 200) { 
-            var response = JSON.parse(req.responseText);
-            for(i = 0; i < response.length; i++) {
-                const latLng = new google.maps.LatLng(response[i][1], response[i][2]);
-
-                const markerUrl = chooseMarkerColor(response[i][0]);
-                const marker = new google.maps.Marker({
-                    position: latLng,
-                    title: response[i][0],
-                    icon: {
-                        url: markerUrl
-                    }
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: response[i][0]
-                });
-
-                marker.set("id", response[i][3]);
-
-                marker.addListener('click', () => {
-                    clearCurrentSideBar();
-                    sideBarVisible(true);
-                    map.setZoom(13);
-                    map.setCenter(marker.getPosition());
-                    infoWindow.open(marker.get('map'), marker);
-                    loadSideBarInfo(marker.get("id"));
-                });
-                marker.setMap(map);
+        const markerUrl = chooseMarkerColor(points[i].type);
+        const marker = new google.maps.Marker({
+            position: latLng,
+            title: points[i].type,
+            icon: {
+                url: markerUrl
             }
-        }
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: points[i].type
+        });
+
+        marker.set("id", points[i].id);
+
+        marker.addListener('click', () => {
+            clearCurrentSideBar();
+            sideBarVisible(true);
+            map.setZoom(13);
+            map.setCenter(marker.getPosition());
+            infoWindow.open(marker.get('map'), marker);
+            loadSideBarInfo(marker.get("id"));
+        });
+        marker.setMap(map);
+        markers.push(marker);
     }
 }
 
@@ -205,4 +214,69 @@ function mouseOut(id) {
     var div = document.getElementById("text"+id);
     if(div.parentNode)
         div.parentNode.removeChild(div);
+}
+
+function toggleHeatMap() {
+    if(heatMap.getMap()) {
+        heatMap.setMap(null);
+        setMapOnAll(map);
+        showHeatMapOptions(false);
+    } else {
+        heatMap.setMap(map);
+        setMapOnAll(null);
+        showHeatMapOptions(true);
+    }
+}
+
+function showHeatMapOptions(value) {
+    var d = document.getElementById("heatMapDiv");
+
+    if(value) {
+        var radius = document.createElement("a");
+        radius.id = "heatMapRadius";
+        radius.innerHTML = "Alterar o raio";
+        radius.style.padding = '8px 8px 8px 50px';
+        radius.style.fontSize = '20px';
+        radius.onclick = changeRadius;
+
+        var opacity = document.createElement("a");
+        opacity.id = "heatMapOpacity";
+        opacity.innerHTML = "Alterar opcidade";
+        opacity.style.padding = '8px 8px 8px 50px';
+        opacity.style.fontSize = '20px';
+        opacity.onclick = changeOpacity;
+
+        d.appendChild(radius);
+        d.appendChild(opacity);
+    } else {
+        d.removeChild(document.getElementById("heatMapRadius"));
+        d.removeChild(document.getElementById("heatMapOpacity"));
+    }
+}
+
+function changeRadius() {
+    heatMap.set("radius", heatMap.get("radius") ? null : 20);
+}
+
+function changeOpacity() {
+    heatMap.set("opacity", heatMap.get("opacity") ? null : 0.2);
+}
+
+function setMapOnAll(map) {
+    for(let i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
+}
+
+function getHeatMapData() {
+    var heatMapData = [];
+    if(points.length > 0) {
+        for(var i = 0; i < points.length; i++) {
+            heatMapData.push({
+                location: new google.maps.LatLng(points[i].lat, points[i].long),
+                weight: points[i].length
+            });
+        }
+    }
+    return heatMapData;
 }
