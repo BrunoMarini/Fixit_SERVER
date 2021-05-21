@@ -1,4 +1,4 @@
-let map, heatMap;
+let map, heatMap, cluster;
 let pointInfo;
 let points;
 let markers = [];
@@ -40,6 +40,10 @@ function loadFunc(token, env) {
 
                 addPanToCurrentLocationButton();
                 loadMarkers();
+
+                cluster = new MarkerClusterer(map, markers, {
+                    imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"
+                });
             }
         }
     };
@@ -61,9 +65,9 @@ function addPanToCurrentLocationButton() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
                 };
-                infoWindow.setPosition(pos);
+                /*infoWindow.setPosition(pos);
                 infoWindow.setContent("Location found.");
-                infoWindow.open(map);
+                infoWindow.open(map);*/
                 map.setCenter(pos);
             }, () => {
                 handleLocationError(true, infoWindow, map.getCenter());
@@ -236,10 +240,12 @@ function mouseOut(id) {
 function toggleHeatMap() {
     if(heatMap.getMap()) {
         heatMap.setMap(null);
+        cluster.setMap(map);
         setMapOnAll(map);
         showHeatMapOptions(false);
     } else {
         heatMap.setMap(map);
+        cluster.setMap(null);
         setMapOnAll(null);
         showHeatMapOptions(true);
     }
@@ -296,4 +302,8 @@ function getHeatMapData() {
         }
     }
     return heatMapData;
+}
+
+function toggleCluster() {
+    cluster.setMap(cluster.getMap() ? null : map);
 }

@@ -3,6 +3,7 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script><script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
         <script src='/mapScript.js'></script>
+        <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400"><link href='/resources/home.css' rel="stylesheet">
     </head>
@@ -14,7 +15,7 @@
             <div id="heatMapDiv">
                 <a onclick="toggleHeatMap()"> Aplicar HeatMap </a>
             </div>
-            <a href="#"> Mostrar todos </a>
+            <a onclick="toggleCluster()"> Mostrar todos </a>
             <a href="#"> Apenas um tipo </a>
             <!--a href="#"> Delimitar por território </a-->
             <a href="#" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
