@@ -100,7 +100,7 @@ function loadMarkers() {
         });
 
         const infoWindow = new google.maps.InfoWindow({
-            content: points[i].type
+            content: getMarkerTitle(points[i].type, points[i].length)
         });
 
         marker.set("id", points[i].id);
@@ -116,6 +116,23 @@ function loadMarkers() {
         marker.setMap(map);
         markers.push(marker);
     }
+}
+
+function getMarkerTitle(type, length) {
+    var typePtBr;
+    switch (type) {
+        case 'Depredation': typePtBr = 'Depredação';     break;
+        case 'Road':        typePtBr = 'Problema na via';  break;
+        case 'Leak':        typePtBr = 'Vazamento';   break;
+        case 'Garbage':     typePtBr = 'Depósito de lixo'; break;
+        case 'Flood':       typePtBr = 'Alagamento'; break;
+    }
+    var html =  '<div id="content">' +
+                    '<div id="siteNotive">' +
+                '</div>' +
+                '<p><center><h3> ' + typePtBr + '</h3></center></p>' +
+                '<p><center> Quantidade: ' + length + '</center></p>';
+    return html;
 }
 
 function chooseMarkerColor(type) {
