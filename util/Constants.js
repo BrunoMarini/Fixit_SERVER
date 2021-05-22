@@ -17,6 +17,7 @@ const MESSAGE_INTERNAL_ERROR = "Erro interno no servidor!";
 const MESSAGE_NOT_AUTHENTICATED = "Usuário não autenticado!";
 const MESSAGE_WRONG_EMAIL_PASS = "Email e/ou senha incorreto(s)!";
 const MESSAGE_NOT_AUTHORIZED = "Usuário não autorizado!";
+const MESSAGE_NOT_FOUND = "Não encontrado!";
 
 module.exports = {
     HTTP_OK:                     HTTP_OK,
@@ -34,5 +35,6 @@ module.exports = {
     MESSAGE_INTERNAL_ERROR:      MESSAGE_INTERNAL_ERROR,
     MESSAGE_NOT_AUTHENTICATED:   MESSAGE_NOT_AUTHENTICATED,
     MESSAGE_WRONG_EMAIL_PASS:    MESSAGE_WRONG_EMAIL_PASS,
-    MESSAGE_NOT_AUTHORIZED:      MESSAGE_NOT_AUTHORIZED
+    MESSAGE_NOT_AUTHORIZED:      MESSAGE_NOT_AUTHORIZED,
+    MESSAGE_NOT_FOUND:           MESSAGE_NOT_FOUND
 }

@@ -23,6 +23,9 @@ app.get('/', (req, res) => {
 });
 
 /* Import default routes */
+const adminPost = require('./routes/adminPost');
+app.use('/admin', adminPost);
+
 const mapPost = require('./routes/mapPost');
 app.use('/map', mapPost);
 

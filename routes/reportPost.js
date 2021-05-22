@@ -3,6 +3,8 @@ const router = express.Router();
 const Utils = require('../util/Utils');
 const Constants = require('../util/Constants');
 const ReportModel = require('../models/reportModel');
+const PositionModel = require('../models/positionModel');
+const TokenGenerator = require('uuid-token-generator');
 const fs = require('fs');
 
 router.post("/new", async (req, res) => {
@@ -16,16 +18,49 @@ router.post("/new", async (req, res) => {
     const coordinates = req.body.coordinates;
     const position = { type: 'Point', coordinates: [coordinates[0], coordinates[1]] };
 
-    const report = new ReportModel({        
-        type: req.body.type,
-        description: req.body.description,
-        position: position,
-        image: req.body.image
-    });
-    
-    const saved = await report.save();
+    const tokenGen = new TokenGenerator();
+    const reportId = tokenGen.generate();
 
-    if(saved)
+    const type = req.body.type;
+
+    const report = new ReportModel({        
+        description: req.body.description,
+        image: req.body.image,
+        userId: user.token,
+        reportId: reportId
+    });
+
+    const currentPositions = await
+    PositionModel.findOne().and([
+        { type: type },
+        { location: {
+                $near: {
+                    $maxDistance: 30,
+                    $geometry: position
+                }
+            }
+        }
+    ]);
+
+    var savedPosition = undefined;
+    //If reported position already exists
+    if(currentPositions) {
+        console.log("[Server] Position already registered!");
+        currentPositions.reports.push(reportId);
+        savedPosition = await currentPositions.save();
+    } else {
+        console.log("[Server] New position received!");
+        const place = new PositionModel({
+            type: type,
+            location: position,
+        });
+        place.reports.push(reportId);
+        savedPosition = await place.save();
+    }
+    
+    const savedReport = await report.save(); 
+
+    if(savedPosition && savedReport)
         return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 
     console.log("[Server] Error trying to save new report!");
