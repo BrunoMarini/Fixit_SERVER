@@ -66,4 +66,14 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.post("/validate", async (req, res) => {
+    console.log("[Server] Validate user");
+    const user = await Utils.isUserValid(req);
+    if(!user) {
+        console.log("[Server] User not valid!");
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
+});
+
 module.exports = router;

@@ -3,10 +3,38 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script><script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
         <script src='/mapScript.js'></script>
+        <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
-        <link href='/resources/home.css' rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400"><link href='/resources/home.css' rel="stylesheet">
     </head>
     <body>
+
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <div style="height: 100%;">
+            <div id="heatMapDiv">
+                <a onclick="toggleHeatMap()"> Aplicar HeatMap </a>
+            </div>
+            <a onclick="toggleCluster()"> Mostrar todos </a>
+            <div id="oneTypeDiv">
+                <a onclick="toggleOneTypeOnly()"> Apenas um tipo </a>
+            </div>
+            <!--a href="#"> Delimitar por território </a-->
+            <a href="#" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
+            </div>
+        </div>
+        <span id="hamburguerMenu" onclick="openNav()"> &#9776; Menu </span>
+
+        <div id="sideBar">
+            <div>
+                <button id="btnClose" onclick="sideBarVisible(false)"> Fechar Infos </button>
+                <ul>
+                    <p id="sideBarTitle"> Reportes Encontrados! </p>
+                </ul>
+            </div>
+            <div id="images"></div>
+        </div>
+
         <div id='map' style='position: absolute; top: 0px; bottom: 0px; width: 100%;'></div>
 
         <script>
@@ -14,5 +42,18 @@
             var env = "<%= env %>";
             loadFunc(token, env);
         </script>
+
+        <script>
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("hamburguerMenu").style.visibility = "hidden";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("hamburguerMenu").style.visibility = "visible";
+            }
+        </script>
+
     </body>
 </html>
