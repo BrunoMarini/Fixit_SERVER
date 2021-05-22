@@ -43,6 +43,7 @@ function loadFunc(token, env) {
                 loadMarkers();
 
                 cluster = new MarkerClusterer(map, markers, {
+                    ignoreHidden: true,
                     imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"
                 });
             }
@@ -108,7 +109,7 @@ function loadMarkers() {
             content: getMarkerTitle(points[i].type, points[i].length)
         });
 
-        marker.set("id", points[i].id);
+        marker.set("id", points[i].type + "@" + points[i].id);
 
         marker.addListener('click', () => {
             clearCurrentSideBar();
@@ -132,20 +133,23 @@ function closeAllInfoWindows() {
 }
 
 function getMarkerTitle(type, length) {
-    var typePtBr;
-    switch (type) {
-        case 'Depredation': typePtBr = 'Depredação';     break;
-        case 'Road':        typePtBr = 'Problema na via';  break;
-        case 'Leak':        typePtBr = 'Vazamento';   break;
-        case 'Garbage':     typePtBr = 'Depósito de lixo'; break;
-        case 'Flood':       typePtBr = 'Alagamento'; break;
-    }
+    var typePtBr = translateType(type);
     var html =  '<div id="content">' +
                     '<div id="siteNotive">' +
                 '</div>' +
                 '<p><center><h3> ' + typePtBr + '</h3></center></p>' +
                 '<p><center> Quantidade: ' + length + '</center></p>';
     return html;
+}
+
+function translateType(type) {
+    switch (type) {
+        case 'Depredation': return 'Depredação';
+        case 'Road':        return 'Problema na via';
+        case 'Leak':        return 'Vazamento';
+        case 'Garbage':     return 'Depósito de lixo';
+        case 'Flood':       return 'Alagamento';
+    }
 }
 
 function chooseMarkerColor(type) {
@@ -179,6 +183,7 @@ function clearCurrentSideBar() {
 }
 
 function loadSideBarInfo(id) {
+    id = id.split("@")[1];
     var req = new XMLHttpRequest();
     req.open('POST', '/map/getPoint/'+id, true);
     req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
@@ -255,12 +260,10 @@ function mouseOut(id) {
 function toggleHeatMap() {
     if(heatMap.getMap()) {
         heatMap.setMap(null);
-        cluster.setMap(map);
         setMapOnAll(map);
         showHeatMapOptions(false);
     } else {
         heatMap.setMap(map);
-        cluster.setMap(null);
         setMapOnAll(null);
         showHeatMapOptions(true);
     }
@@ -270,20 +273,8 @@ function showHeatMapOptions(value) {
     var d = document.getElementById("heatMapDiv");
 
     if(value) {
-        var radius = document.createElement("a");
-        radius.id = "heatMapRadius";
-        radius.innerHTML = "Alterar o raio";
-        radius.style.padding = '8px 8px 8px 50px';
-        radius.style.fontSize = '20px';
-        radius.onclick = changeRadius;
-
-        var opacity = document.createElement("a");
-        opacity.id = "heatMapOpacity";
-        opacity.innerHTML = "Alterar opcidade";
-        opacity.style.padding = '8px 8px 8px 50px';
-        opacity.style.fontSize = '20px';
-        opacity.onclick = changeOpacity;
-
+        var radius = createSubElement("heatMapRadius", "Alterar o raio", changeRadius);
+        var opacity = createSubElement("heatMapOpacity", "Alterar Opacidade", changeOpacity);
         d.appendChild(radius);
         d.appendChild(opacity);
     } else {
@@ -304,6 +295,11 @@ function setMapOnAll(map) {
     for(let i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
     }
+    if(map) {
+        cluster.addMarkers(markers);
+    } else {
+        cluster.clearMarkers();
+    }
 }
 
 function getHeatMapData() {
@@ -321,4 +317,55 @@ function getHeatMapData() {
 
 function toggleCluster() {
     cluster.setMap(cluster.getMap() ? null : map);
+}
+
+function toggleOneTypeOnly() {
+    var d = document.getElementById("oneTypeDiv");
+    var elem = [];
+    if(d.childElementCount > 1) {
+        setMapOnAll(map);
+        elem.push(document.getElementById("typeDepredation"));
+        elem.push(document.getElementById("typeRoad"));
+        elem.push(document.getElementById("typeLeak"));
+        elem.push(document.getElementById("typeGarbage"));
+        elem.push(document.getElementById("typeFlood"));
+
+        for(var i = 0; i < elem.length; i++)
+            d.removeChild(elem[i]);
+    } else {
+        setMapOnAll(null);
+        elem.push(createSubElement("typeDepredation", translateType('Depredation'), function() { showSelectedType('Depredation') }));
+        elem.push(createSubElement("typeRoad", translateType('Road'), function() { showSelectedType('Road') }));
+        elem.push(createSubElement("typeLeak", translateType('Leak'), function() { showSelectedType('Leak') }));
+        elem.push(createSubElement("typeGarbage", translateType('Garbage'), function() { showSelectedType('Garbage') }));
+        elem.push(createSubElement("typeFlood", translateType('Flood'), function() { showSelectedType('Flood') }));
+
+        for(var i = 0; i < elem.length; i++)
+            d.appendChild(elem[i]);
+    }
+}
+
+function showSelectedType(type) {
+    for(let i = 0; i < markers.length; i++) {
+        if(markers[i].id.split("@")[0] == type) {
+            var ele = document.getElementById('type'+type);
+            if(markers[i].getMap()) {
+                markers[i].setMap(null);
+                ele.style.color = 'black';
+            } else {
+                markers[i].setMap(map);
+                ele.style.color = 'red';
+            }
+        }
+    }
+}
+
+function createSubElement(id, text, func) {
+    const elem = document.createElement("a");
+    elem.id = id;
+    elem.innerHTML = text;
+    elem.style.padding = '8px 8px 8px 50px';
+    elem.style.fontSize = '20px';
+    elem.onclick = func;
+    return elem;
 }
