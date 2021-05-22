@@ -2,6 +2,7 @@ let map, heatMap, cluster;
 let pointInfo;
 let points;
 let markers = [];
+let infoWindows = [];
 
 function loadFunc(token, env) {
     // Create the script tag, set the appropriate attributes
@@ -112,13 +113,21 @@ function loadMarkers() {
         marker.addListener('click', () => {
             clearCurrentSideBar();
             sideBarVisible(true);
-            map.setZoom(13);
+            map.setZoom(20);
             map.setCenter(marker.getPosition());
+            closeAllInfoWindows();
             infoWindow.open(marker.get('map'), marker);
             loadSideBarInfo(marker.get("id"));
         });
         marker.setMap(map);
         markers.push(marker);
+        infoWindows.push(infoWindow);
+    }
+}
+
+function closeAllInfoWindows() {
+    for(let i = 0; i < infoWindows.length; i++) {
+        infoWindows[i].close();
     }
 }
 
@@ -153,7 +162,13 @@ function chooseMarkerColor(type) {
 
 function sideBarVisible(visible) {
     const sideBar = document.getElementById("sideBar");
-    sideBar.style.visibility = (visible ? "visible" : "hidden");
+    if(visible) {
+        sideBar.style.visibility = "visible";
+    } else {
+        map.setZoom(15);
+        sideBar.style.visibility = "hidden";
+        closeAllInfoWindows();
+    }
 }
 
 function clearCurrentSideBar() {
