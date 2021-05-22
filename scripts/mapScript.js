@@ -3,6 +3,24 @@ let pointInfo;
 let points;
 let markers = [];
 let infoWindows = [];
+let mapStyleClear =
+[{
+    "featureType": "poi",
+    "elementType": "labels.text",
+    "stylers": [{ "visibility": "off" }]
+}, {
+    "featureType": "poi.business",
+    "stylers": [{ "visibility": "off" }]
+    },
+    {
+      "featureType": "road",
+      "elementType": "labels.icon",
+      "stylers": [{ "visibility": "off" }]
+    },
+    {
+      "featureType": "transit",
+      "stylers": [{ "visibility": "off" }]
+}];
 
 function loadFunc(token, env) {
     // Create the script tag, set the appropriate attributes
@@ -28,6 +46,7 @@ function loadFunc(token, env) {
                     center: { lat: -34.397, lng: 150.644 },
                     zoom: 8,
                     mapTypeControl: true,
+                    styles: mapStyleClear,
                     mapTypeControlOptions: {
                         style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
                         position: google.maps.ControlPosition.TOP_RIGHT
@@ -368,4 +387,9 @@ function createSubElement(id, text, func) {
     elem.style.fontSize = '20px';
     elem.onclick = func;
     return elem;
+}
+
+function performAdminLogin() {
+    const login = document.getElementById('fname').value;
+    const pass = document.getElementById('lname').value;
 }

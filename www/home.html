@@ -5,7 +5,8 @@
         <script src='/mapScript.js'></script>
         <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400"><link href='/resources/home.css' rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400">
+        <link href='/resources/home.css' rel="stylesheet">
     </head>
     <body>
 
@@ -20,7 +21,7 @@
                 <a onclick="toggleOneTypeOnly()"> Apenas um tipo </a>
             </div>
             <!--a href="#"> Delimitar por território </a-->
-            <a href="#" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
+            <a onclick="openAdminLogin()" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
             </div>
         </div>
         <span id="hamburguerMenu" onclick="openNav()"> &#9776; Menu </span>
@@ -53,7 +54,37 @@
                 document.getElementById("mySidenav").style.width = "0";
                 document.getElementById("hamburguerMenu").style.visibility = "visible";
             }
+
+            function openAdminLogin() {
+                closeNav();
+                document.getElementById("adminPopUp").style.visibility = "visible";
+            }
+
+            function closeAdminLogin() {
+                document.getElementById("adminPopUp").style.visibility = "hidden";
+            }
         </script>
+
+        <div id="adminPopUp" class="adminPopUp">
+            <div id="adminPopUpContent" class="reveal-modal">
+                <div>
+                    <a class="closeAdminPopUp" onclick="closeAdminLogin()">&times;</a>
+                    <h2> Login de Administrador </h2>
+                </div>
+                <p>
+                    <form>
+                        <label for="fname"> Login </label><br>
+                        <input type="text" id="fname" name="fname"><br><br>
+                        <label for="lname"> Senha </label><br>
+                        <input type="password" id="lname" name="lname"><br><br>
+                    </form>
+                    <button onclick="performAdminLogin()"> Logar </button>
+                    <br><br><br>
+                    Faz parde de uma instituição interessada em ser adminitradora do sistem?
+                    <a href="/sejaAdmin.html"> CLIQUE AQUI</a>
+                </p>
+            </div>
+        </div>
 
     </body>
 </html>
