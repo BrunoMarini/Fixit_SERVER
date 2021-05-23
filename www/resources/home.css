@@ -24,7 +24,8 @@ body {
     position: fixed;
     right: 5%;
     border-radius: 10px;
-    width: 400px;
+    width: 20%;
+    min-width: 300px;
     height: 75%;
     z-index: 3000;
     margin: 0;
@@ -132,3 +133,16 @@ body {
     box-shadow:0 0 10px rgba(0,0,0,0.4);
 }
 /* Login PopUp */
+
+.deleteReport {
+    position: fixed;
+    background-color: #e1d1e1;
+    padding: 4px;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    border-radius: 10px;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+}

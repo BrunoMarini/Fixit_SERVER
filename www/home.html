@@ -12,16 +12,16 @@
 
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <div style="height: 100%;">
-            <div id="heatMapDiv">
-                <a onclick="toggleHeatMap()"> Aplicar HeatMap </a>
-            </div>
-            <a onclick="toggleCluster()"> Mostrar todos </a>
-            <div id="oneTypeDiv">
-                <a onclick="toggleOneTypeOnly()"> Apenas um tipo </a>
-            </div>
-            <!--a href="#"> Delimitar por território </a-->
-            <a onclick="openAdminLogin()" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
+            <div id="menuOpt" style="height: 100%;">
+                <div id="heatMapDiv">
+                    <a onclick="toggleHeatMap()"> Aplicar HeatMap </a>
+                </div>
+                <a onclick="toggleCluster()"> Mostrar todos </a>
+                <div id="oneTypeDiv">
+                    <a onclick="toggleOneTypeOnly()"> Apenas um tipo </a>
+                </div>
+                <!--a href="#"> Delimitar por território </a-->
+                <a onclick="openAdminLogin()" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
             </div>
         </div>
         <span id="hamburguerMenu" onclick="openNav()"> &#9776; Menu </span>
@@ -85,6 +85,29 @@
                 </p>
             </div>
         </div>
+
+        <div id="deleteReportDiv" class="deleteReport">
+            <h1> Excluir reporte? </h1>
+            <h3> Deseja excluir esse reporte? Digite o motivo a baixo </h3>
+            <div id="imgToBeDeleted"></div>
+            <div id="textToBeDeleted"></div>
+            <div>
+                <textarea id="deleteText" cols="50" rows="4"></textarea>
+            </div>
+            <button id="btnCancel" onclick="closeDeleteReport()"> Cancelar </button>
+            <button id="btnDelete" onclick="deleteReport()"> Deltar report </button>
+        </div>
+        <script>
+            function closeDeleteReport() {
+                document.getElementById('deleteReportDiv').style.visibility = 'hidden';
+                cancelDelete();
+            }
+
+            function deleteReport() {
+                const text = document.getElementById('deleteText').value;
+                sendDeleteReportRequest(text);
+            }
+        </script>
 
     </body>
 </html>
