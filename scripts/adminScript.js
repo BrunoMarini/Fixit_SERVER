@@ -1,4 +1,4 @@
-function requestToBeAdmin() {
+async function requestToBeAdmin() {
     var data = new FormData();
     data.append('institution', document.getElementById("name").value);
     data.append('sector', document.getElementById("sector").value);
@@ -6,14 +6,14 @@ function requestToBeAdmin() {
     data.append('phone', document.getElementById("phone").value);
     data.append('desc', document.getElementById("description").value);
 
-    if(validateInput(data)) {
+    if(await validateInput(data)) {
         //TODO show error message
     } else {
         let url = '/admin/register';
         let h = new Headers();
         h.append('Content-type', 'application/json');
 
-        let json = convertFdToJson(data);
+        let json = await convertFdToJson(data);
 
         let req = new Request(url, {
             headers: h,
@@ -21,12 +21,19 @@ function requestToBeAdmin() {
             method: 'POST'
         });
 
-        fetch(req)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("response: " + data);
-            })
-            .catch(console.warn);
+        const response = await fetch(req);
+
+        if(response.ok) {
+            let t = await response.json();
+            if(response.status == 200) {
+                window.alert("Seu pedido foi realizado com sucesso e será processado pela nossa equipe!\n"+
+                                "Clique o botão a baixo para ser redirecionado para nossa página principal!")
+                window.location = "/";
+            } else {
+                window.alert("Erro ao tentar realizar o pedido!\n" +
+                                t.message);
+            }
+        }
     }
 }
 
