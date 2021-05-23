@@ -21,6 +21,9 @@ const AdminSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    password: {
+        type: String
+    },
     status: {
         type: String,
         enum: ['Pending', 'Active'],

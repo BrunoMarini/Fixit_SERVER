@@ -3,6 +3,7 @@ let pointInfo;
 let points;
 let markers = [];
 let infoWindows = [];
+let adminToken;
 let mapStyleClear =
 [{
     "featureType": "poi",
@@ -389,7 +390,32 @@ function createSubElement(id, text, func) {
     return elem;
 }
 
-function performAdminLogin() {
-    const login = document.getElementById('fname').value;
-    const pass = document.getElementById('lname').value;
+async function performAdminLogin() {
+    const login = await document.getElementById('fname').value;
+    const pass = await document.getElementById('lname').value;
+
+    let url = '/admin/login';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
+
+    let json = { email: login, password: pass };
+    let req = new Request(url, {
+        headers: h,
+        body: JSON.stringify(json),
+        method: 'POST'
+    });
+    const response = await fetch(req);
+
+    if(response.ok) {
+        if(response.status == 200) {
+            const res = await response.json();
+            adminToken = res.token;
+            console.log(adminToken);
+            applyAdminInterface();
+        }
+    }
+}
+
+function applyAdminInterface() {
+
 }
