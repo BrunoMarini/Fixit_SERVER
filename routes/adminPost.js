@@ -39,4 +39,11 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.post("/deleteReport", async (req, res) => {
+    console.log("[Server] Delete report");
+    console.log("Text: " + req.body.text);
+    console.log("Id: " + req.body.id);
+    return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
+});
+
 module.exports = router;
