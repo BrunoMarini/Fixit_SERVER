@@ -23,6 +23,7 @@ const PositionSchema = mongoose.Schema({
     }
 });
 
-PositionSchema.index({ location: "2dsphere" });
+PositionSchema.index({ location: "2dsphere"});
+PositionSchema.index({ coordinates: "2dsphere"});
 
 module.exports = mongoose.model('Positions', PositionSchema);

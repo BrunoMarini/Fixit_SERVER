@@ -35,8 +35,8 @@ router.post("/new", async (req, res) => {
         { type: type },
         { location: {
                 $near: {
-                    $maxDistance: 30,
-                    $geometry: position
+                    $geometry: position,
+                    $maxDistance: 30
                 }
             }
         }
