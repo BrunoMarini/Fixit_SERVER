@@ -1,9 +1,10 @@
 let map, heatMap, cluster;
 let pointInfo;
 let points;
+let idToBeDeleted = undefined;
 let markers = [];
 let infoWindows = [];
-let adminToken;
+let adminToken = undefined;
 let mapStyleClear =
 [{
     "featureType": "poi",
@@ -236,6 +237,12 @@ function appendChild(id, image) {
     elem.onmouseover = function() { mouseOver(id); };
     elem.onmouseout = function() { mouseOut(id); }
 
+    // If admin profile image should be able to be deleted
+    if(adminToken && adminToken.length > 0) {
+        elem.onclick = function() { openImageControl(id); };
+        elem.style.cursor = 'pointer';
+    }
+
     // Add Image to div and append to sidebar
     divContainer.appendChild(elem);
     document.getElementById("images").appendChild(divContainer);
@@ -410,12 +417,52 @@ async function performAdminLogin() {
         if(response.status == 200) {
             const res = await response.json();
             adminToken = res.token;
-            console.log(adminToken);
             applyAdminInterface();
         }
     }
 }
 
 function applyAdminInterface() {
+    const side = document.getElementById("menuOpt");
+    var elem = document.createElement('a');
+    elem.id = "adminControlPanel";
+    elem.innerHTML = 'Painel de Controle';
+    side.appendChild(elem);
+    closeAdminLogin();
+}
 
+function openImageControl(id) {
+    const div = document.getElementById('deleteReportDiv');
+    div.style.visibility = "visible";
+    idToBeDeleted = id;
+}
+
+function cancelDelete() {
+    idToBeDeleted = undefined;
+}
+
+async function sendDeleteReportRequest(text) {
+    if(!idToBeDeleted)
+        return;
+
+    let url = '/admin/deleteReport';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
+
+    let json = { id: idToBeDeleted, text: text };
+    let req = new Request(url, {
+        headers: h,
+        body: JSON.stringify(json),
+        method: 'POST'
+    });
+    const response = await fetch(req);
+    if(response.ok) {
+        if(response.status == 200) {
+            window.alert("Reporte deletado com sucesso!");
+            const e = document.getElementById('deleteReportDiv');
+            e.style.visibility = 'hidden';
+            return;
+        }
+    }
+    window.alert("Erro ao excluir, por favor tente navamente");
 }
