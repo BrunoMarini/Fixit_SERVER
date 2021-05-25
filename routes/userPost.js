@@ -56,6 +56,10 @@ router.post("/login", async (req, res) => {
             if(user.status == "Active") {
                 return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, user.token));
             }
+
+            // Resending email confirmation
+            emailAuth.sendConfirmationEmail(user.name, user.email, user.token);
+
             return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
         } else {
             return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_WRONG_EMAIL_PASS));
