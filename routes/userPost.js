@@ -21,7 +21,7 @@ router.post("/register", async (req, res) => {
         // Check if user already exist in DB
         if(existUser) {
             console.log("[Server] User alredy registered");
-            res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
+            return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
             const tokenGen = new TokenGenerator();
             const user = new UserModel({
@@ -39,11 +39,11 @@ router.post("/register", async (req, res) => {
             // Sending email confirmation
             emailAuth.sendConfirmationEmail(saved.name, saved.email, saved.token);
 
-            res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_PENDING));
+            return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_PENDING));
         }
     } catch (err) {
         console.log(err);
-        res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
+        return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
     }
 });
 
@@ -53,7 +53,7 @@ router.post("/login", async (req, res) => {
         const user = await UserModel.findOne({email: req.body.email});
 
         if(user && user.password == req.body.password) {
-            if(user.status = "Active") {
+            if(user.status == "Active") {
                 return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, user.token));
             }
             return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));

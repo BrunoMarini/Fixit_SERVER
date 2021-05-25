@@ -232,8 +232,11 @@ function appendChild(id, image) {
     var elem = document.createElement("img");
     elem.id = id;
     elem.src = "data:image/jpg;base64, " + image;
-    elem.style.width = "300px";
-    elem.style.height = "200px";
+    elem.style.width = 'auto';
+    elem.style.height = 'auto';
+    elem.style.maxWidth = '100%';
+    /*elem.style.width = "300px";
+    elem.style.height = "200px";*/
     elem.onmouseover = function() { mouseOver(id); };
     elem.onmouseout = function() { mouseOut(id); }
 
@@ -515,5 +518,6 @@ function openImageZoom(id) {
 function closeZoom(visible) {
     const zoomDiv = document.getElementById('imageZoomDiv');
     zoomDiv.innerHTML = '';
+    zoomDiv.style.visibility = 'hidden';
     sideBarVisible(visible);
 }
