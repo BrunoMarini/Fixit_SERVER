@@ -146,3 +146,16 @@ body {
     transform: translate(-50%, -50%);
     visibility: hidden;
 }
+
+.zoomReport {
+    position: fixed;
+    background-color: #e1d1e1;
+    padding: 4px;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    border-radius: 10px;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+}
