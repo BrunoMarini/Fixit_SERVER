@@ -94,6 +94,12 @@
             <div>
                 <textarea id="deleteText" cols="50" rows="4"></textarea>
             </div>
+            <form>
+                <br>
+                <label for="cbBlockUser"> Bloquear usuário? </label>
+                <input type="checkbox" id="cbBlockUser" name="cbBlockUser" value="0">
+            </form>
+            <br>
             <button id="btnCancel" onclick="closeDeleteReport()"> Cancelar </button>
             <button id="btnDelete" onclick="deleteReport()"> Deltar report </button>
         </div>
@@ -109,7 +115,8 @@
 
             function deleteReport() {
                 const text = document.getElementById('deleteText').value;
-                sendDeleteReportRequest(text);
+                const blockUser = document.getElementById('cbBlockUser').checked;
+                sendDeleteReportRequest(text, blockUser);
             }
         </script>
 

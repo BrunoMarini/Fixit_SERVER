@@ -441,15 +441,16 @@ function cancelDelete() {
     idToBeDeleted = undefined;
 }
 
-async function sendDeleteReportRequest(text) {
+async function sendDeleteReportRequest(text, blockUser) {
     if(!idToBeDeleted)
         return;
 
     let url = '/admin/deleteReport';
     let h = new Headers();
     h.append('Content-type', 'application/json');
+    h.append('authorization', 'Bearer ' + adminToken);
 
-    let json = { id: idToBeDeleted, text: text };
+    let json = { id: idToBeDeleted, text: text, blockUser: blockUser };
     let req = new Request(url, {
         headers: h,
         body: JSON.stringify(json),
