@@ -12,6 +12,12 @@ router.post("/register", async (req, res) => {
     try {
         console.log("[Server] Register new user");
 
+        //Verify with email and/or phone are blocked
+        if(await Utils.isBlocked(req.body.email, req.body.phone)) {
+            console.log("[Server] Blocked user tried to register");
+            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+        }
+
         // Search for users with the same email or phone 
         const existUser = await UserModel.findOne().or([
             { email: req.body.email},
