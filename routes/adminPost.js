@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
 const ReportModel = require('../models/reportModel');
 const PositionModel = require('../models/positionModel');
+const UserBlackListModel = require('../models/userBlackListModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
 const TokenGenerator = require ('uuid-token-generator');
@@ -11,6 +13,12 @@ const TokenGenerator = require ('uuid-token-generator');
 router.post("/register", async (req, res) => {
     const tokenGen = new TokenGenerator();
     console.log("[Server] Admin register");
+
+    if(await Utils.isBlocked(req.body.email, req.body.phone)) {
+        console.log("[Server] Blocked user tried to request to be admin");
+        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+
     const adm = new AdminModel({
         institution: req.body.institution,
         sector: req.body.sector,
@@ -77,9 +85,19 @@ router.post("/deleteReport", async (req, res) => {
         //save report again
     }
 
-    //GET POSITION AND DELETE THIS REPORT FROM ARRAY
     if(req.body.blockUser) {
-        // GET USER DELTE HIS REPORTS AND UPDATE ALL
+        const userId = report.userId;
+        const blockedUser = await UserModel.findOneAndDelete({ token: userId });
+        if(blockedUser) {
+            const blocked = new UserBlackListModel({
+                email: blockedUser.email,
+                phone: blockedUser.phone
+            });
+            const saved = await blocked.save();
+            if(saved) {
+                console.log("[Server] User blocked!");
+            }
+        }
     }
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 });

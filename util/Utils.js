@@ -1,5 +1,6 @@
 const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
+const UserBlackListModel = require('../models/userBlackListModel');
 
 /* 
  * Auxiliar function to create response JSON 
@@ -54,6 +55,23 @@ module.exports.isAdminValid = async(req) => {
         return admin;
     }
     return undefined;
+}
+
+/**
+ * Auxiliar function to verify if current email or password are blacklisted
+ *
+ * @param {NullAble} email to verify
+ * @param {NullAble} phone to verify
+ *
+ * @returns true if email of phone are blacklisted, false otherwise
+ */
+module.exports.isBlocked = async(email, phone) => {
+    const exist = await UserBlackListModel.findOne().or([
+        { email: email },
+        { phone: phone }
+    ]);
+    console.log(exist);
+    return (exist ? true : false);
 }
 
 /**
