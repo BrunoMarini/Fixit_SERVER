@@ -70,7 +70,6 @@ module.exports.isBlocked = async(email, phone) => {
         { email: email },
         { phone: phone }
     ]);
-    console.log(exist);
     return (exist ? true : false);
 }
 
