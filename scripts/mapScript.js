@@ -459,6 +459,7 @@ async function sendDeleteReportRequest(text, blockUser) {
     const response = await fetch(req);
     if(response.ok) {
         if(response.status == 200) {
+            prepareToRefreshMarkers();
             window.alert("Reporte deletado com sucesso!");
             const e = document.getElementById('deleteReportDiv');
             e.style.visibility = 'hidden';
@@ -466,6 +467,28 @@ async function sendDeleteReportRequest(text, blockUser) {
         }
     }
     window.alert("Erro ao excluir, por favor tente navamente");
+}
+
+function prepareToRefreshMarkers() {
+    var req = new XMLHttpRequest();
+    req.open('GET', '/map/getReports', true);
+    req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
+    req.send();
+
+    req.onreadystatechange = function() {
+        if (req.readyState == 4 && req.status == 200) {
+            var response = JSON.parse(req.responseText);
+            points = response;
+            refreshMarkers();
+        }
+    }
+}
+
+function refreshMarkers() {
+    setMapOnAll(null);
+    markers = [];
+    loadMarkers();
+    setMapOnAll(map);
 }
 
 function openImageZoom(id) {

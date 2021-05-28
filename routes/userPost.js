@@ -56,6 +56,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     console.log("[Server] User login");
     try {
+        //Verify with email is blocked
+        if(await Utils.isBlocked(req.body.email, undefined)) {
+            console.log("[Server] Blocked user tried to login");
+            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+        }
+
         const user = await UserModel.findOne({email: req.body.email});
 
         if(user && user.password == req.body.password) {
@@ -66,7 +72,7 @@ router.post("/login", async (req, res) => {
             // Resending email confirmation
             emailAuth.sendConfirmationEmail(user.name, user.email, user.token);
 
-            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
+            return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
         } else {
             return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_WRONG_EMAIL_PASS));
         }
