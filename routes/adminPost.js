@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
+const ReportModel = require('../models/reportModel');
+const PositionModel = require('../models/positionModel');
+const UserBlackListModel = require('../models/userBlackListModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
 const TokenGenerator = require ('uuid-token-generator');
@@ -9,6 +13,12 @@ const TokenGenerator = require ('uuid-token-generator');
 router.post("/register", async (req, res) => {
     const tokenGen = new TokenGenerator();
     console.log("[Server] Admin register");
+
+    if(await Utils.isBlocked(req.body.email, req.body.phone)) {
+        console.log("[Server] Blocked user tried to request to be admin");
+        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+
     const adm = new AdminModel({
         institution: req.body.institution,
         sector: req.body.sector,
@@ -39,11 +49,84 @@ router.post("/login", async (req, res) => {
     }
 });
 
+//TODO move to blocked array and user black list
 router.post("/deleteReport", async (req, res) => {
     console.log("[Server] Delete report");
-    console.log("Text: " + req.body.text);
-    console.log("Id: " + req.body.id);
+    const admin = await Utils.isAdminValid(req);
+    if(!admin) {
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    const report = await ReportModel.findOneAndDelete({ reportId: req.body.id });
+    if(!report) {
+        return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_NOT_FOUND));
+    }
+
+    const position = await PositionModel.findOne({ reports: report.reportId });
+    if(position) {
+        var r = position.reports;
+        if(r.length > 1) {
+            const index = r.indexOf(report.reportId);
+            if(index > -1) {
+                r.splice(index, 1);
+            }
+            position.reports = r;
+            const saved = await position.save();
+            if(!saved) {
+                console.log("[Server] Error saving updated position");
+                //Save report again
+            }
+        } else {
+            PositionModel.deleteOne({ reports: report.reportId }, function(err) {
+                if(err) console.log(err);
+                console.log("[Server] Position deleted successfully!");
+            });
+        }
+    } else {
+        //save report again
+    }
+
+    if(req.body.blockUser) {
+        const userId = report.userId;
+        const blockedUser = await UserModel.findOneAndDelete({ token: userId });
+        if(blockedUser) {
+            const blocked = new UserBlackListModel({
+                email: blockedUser.email,
+                phone: blockedUser.phone
+            });
+            const saved = await blocked.save();
+            if(saved) {
+                console.log("[Server] User blocked!");
+            }
+        }
+    }
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 });
+
+router.post("/resolveReport", async (req, res) => {
+    console.log("[Server] Resolve Location");
+
+    const admin = await Utils.isAdminValid(req);
+    if(!admin) {
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+
+    const position = await PositionModel.findOneAndDelete({ _id: req.body.resolvedLocation });
+    if(!position) {
+        return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_NOT_FOUND));
+    }
+
+    deleteReportsAndUpdateUserInfo(position.reports);
+
+    return res.status(Constants.HTTP_OK).json(Utils.MESSAGE_SUCCESS);
+});
+
+async function deleteReportsAndUpdateUserInfo(rep) {
+    for(let i = 0; i < rep.length; i++) {
+        const report = await ReportModel.findOneAndDelete({ reportId: rep[i] });
+        const user = await UserModel.findOne({ token: report.userId });
+        user.reportSolved++;
+        user.save();
+    }
+}
 
 module.exports = router;

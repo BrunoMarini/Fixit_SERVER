@@ -12,6 +12,12 @@ router.post("/register", async (req, res) => {
     try {
         console.log("[Server] Register new user");
 
+        //Verify with email and/or phone are blocked
+        if(await Utils.isBlocked(req.body.email, req.body.phone)) {
+            console.log("[Server] Blocked user tried to register");
+            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+        }
+
         // Search for users with the same email or phone 
         const existUser = await UserModel.findOne().or([
             { email: req.body.email},
@@ -21,7 +27,7 @@ router.post("/register", async (req, res) => {
         // Check if user already exist in DB
         if(existUser) {
             console.log("[Server] User alredy registered");
-            res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
+            return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
             const tokenGen = new TokenGenerator();
             const user = new UserModel({
@@ -39,24 +45,34 @@ router.post("/register", async (req, res) => {
             // Sending email confirmation
             emailAuth.sendConfirmationEmail(saved.name, saved.email, saved.token);
 
-            res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_PENDING));
+            return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_PENDING));
         }
     } catch (err) {
         console.log(err);
-        res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
+        return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
     }
 });
 
 router.post("/login", async (req, res) => {
     console.log("[Server] User login");
     try {
+        //Verify with email is blocked
+        if(await Utils.isBlocked(req.body.email, undefined)) {
+            console.log("[Server] Blocked user tried to login");
+            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+        }
+
         const user = await UserModel.findOne({email: req.body.email});
 
         if(user && user.password == req.body.password) {
-            if(user.status = "Active") {
+            if(user.status == "Active") {
                 return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, user.token));
             }
-            return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
+
+            // Resending email confirmation
+            emailAuth.sendConfirmationEmail(user.name, user.email, user.token);
+
+            return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
         } else {
             return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_WRONG_EMAIL_PASS));
         }
@@ -75,5 +91,35 @@ router.post("/validate", async (req, res) => {
     }
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 });
+
+router.get("/stats", async (req, res) => {
+    console.log("[Server] Get user stats");
+    const user = await Utils.isUserValid(req);
+    if(!user) {
+        console.log("[Server] User not valid!");
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    const userInfoJson = {
+        reportViews: user.reportViews,
+        reportSolved: user.reportSolved,
+        reportNumber: user.reportNumber
+    };
+    return res.status(Constants.HTTP_OK).json(userInfoJson);
+});
+
+router.get("/info", async (req, res) => {
+    console.log("[Server] Get user info");
+    const user = await Utils.isUserValid(req);
+    if(!user) {
+        console.log("[Server] User not valid!");
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    const userInfoJson = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+    };
+    return res.status(Constants.HTTP_OK).json(userInfoJson);
+})
 
 module.exports = router;

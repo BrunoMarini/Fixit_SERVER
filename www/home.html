@@ -27,7 +27,7 @@
         <span id="hamburguerMenu" onclick="openNav()"> &#9776; Menu </span>
 
         <div id="sideBar">
-            <div>
+            <div id="header">
                 <button id="btnClose" onclick="sideBarVisible(false)"> Fechar Infos </button>
                 <ul>
                     <p id="sideBarTitle"> Reportes Encontrados! </p>
@@ -88,15 +88,25 @@
 
         <div id="deleteReportDiv" class="deleteReport">
             <h1> Excluir reporte? </h1>
-            <h3> Deseja excluir esse reporte? Digite o motivo a baixo </h3>
+            <h3> Deseja excluir esse reporte? Digite o motivo: </h3>
             <div id="imgToBeDeleted"></div>
             <div id="textToBeDeleted"></div>
             <div>
                 <textarea id="deleteText" cols="50" rows="4"></textarea>
             </div>
+            <form>
+                <br>
+                <label for="cbBlockUser"> Bloquear usuário? </label>
+                <input type="checkbox" id="cbBlockUser" name="cbBlockUser" value="0">
+            </form>
+            <br>
             <button id="btnCancel" onclick="closeDeleteReport()"> Cancelar </button>
             <button id="btnDelete" onclick="deleteReport()"> Deltar report </button>
         </div>
+
+        <div id="imageZoomDiv" class="zoomReport">
+        </div>
+
         <script>
             function closeDeleteReport() {
                 document.getElementById('deleteReportDiv').style.visibility = 'hidden';
@@ -105,7 +115,8 @@
 
             function deleteReport() {
                 const text = document.getElementById('deleteText').value;
-                sendDeleteReportRequest(text);
+                const blockUser = document.getElementById('cbBlockUser').checked;
+                sendDeleteReportRequest(text, blockUser);
             }
         </script>
 

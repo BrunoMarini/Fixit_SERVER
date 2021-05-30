@@ -1,4 +1,6 @@
 const UserModel = require('../models/userModel');
+const AdminModel = require('../models/adminModel');
+const UserBlackListModel = require('../models/userBlackListModel');
 
 /* 
  * Auxiliar function to create response JSON 
@@ -22,7 +24,7 @@ module.exports.createJson = (...message) => {
  * 
  * @param User request req to retrieve Bearer token
  * 
- * @return current user or undefined in case of no user
+ * @return current user if it exists, undefined otherwise
  */
 module.exports.isUserValid = async (req) => {
     console.log("[Server] isUserValid");
@@ -31,9 +33,44 @@ module.exports.isUserValid = async (req) => {
             {token: req.headers.authorization.split(' ')[1]},
             {status: 'Active'}
         ]);
-        return (user ? user : undefined);
+        return user;
     } 
     return undefined;
+}
+
+/**
+ * Auxiliar async function to verify if admin is valid
+ *
+ * @param Admin request req to retrieve Bearer token
+ *
+ * @return current admin if it exists, undefined otherwise
+ */
+module.exports.isAdminValid = async(req) => {
+    console.log("[Server] isAdminValid");
+    if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        const admin = await AdminModel.findOne().and([
+            { token: req.headers.authorization.split(' ')[1] },
+            { status: 'Active' }
+        ]);
+        return admin;
+    }
+    return undefined;
+}
+
+/**
+ * Auxiliar function to verify if current email or password are blacklisted
+ *
+ * @param {NullAble} email to verify
+ * @param {NullAble} phone to verify
+ *
+ * @returns true if email of phone are blacklisted, false otherwise
+ */
+module.exports.isBlocked = async(email, phone) => {
+    const exist = await UserBlackListModel.findOne().or([
+        { email: email },
+        { phone: phone }
+    ]);
+    return (exist ? true : false);
 }
 
 /**

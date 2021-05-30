@@ -45,7 +45,7 @@ function loadFunc(token, env) {
                 points = response;
 
                 map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: -34.397, lng: 150.644 },
+                    center: { lat: -22.902612666166245, lng: -47.07165189321403 },
                     zoom: 8,
                     mapTypeControl: true,
                     styles: mapStyleClear,
@@ -205,6 +205,22 @@ function clearCurrentSideBar() {
 
 function loadSideBarInfo(id) {
     id = id.split("@")[1];
+
+    //Add resolve location button if admin
+    if(adminToken != undefined && adminToken.length > 0) {
+        const btnResolve = document.createElement("button");
+        btnResolve.innerHTML = "Resolver Localização";
+        btnResolve.style.position = "absolute";
+        btnResolve.style.width = "100%";
+        btnResolve.style.right = "0";
+        btnResolve.style.height = "40px";
+        btnResolve.style.borderRadius = "10px";
+        btnResolve.onclick = function() { resolveLocation(id); };
+        const head = document.getElementById("header");
+        head.appendChild(btnResolve);
+        head.style.marginBottom = "60px";
+    }
+
     var req = new XMLHttpRequest();
     req.open('POST', '/map/getPoint/'+id, true);
     req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
@@ -232,16 +248,16 @@ function appendChild(id, image) {
     var elem = document.createElement("img");
     elem.id = id;
     elem.src = "data:image/jpg;base64, " + image;
-    elem.style.width = "300px";
-    elem.style.height = "200px";
+    elem.style.width = 'auto';
+    elem.style.height = 'auto';
+    elem.style.maxWidth = '100%';
+    /*elem.style.width = "300px";
+    elem.style.height = "200px";*/
     elem.onmouseover = function() { mouseOver(id); };
     elem.onmouseout = function() { mouseOut(id); }
 
-    // If admin profile image should be able to be deleted
-    if(adminToken && adminToken.length > 0) {
-        elem.onclick = function() { openImageControl(id); };
-        elem.style.cursor = 'pointer';
-    }
+    elem.onclick = function() { openImageZoom(id); };
+    elem.style.cursor = 'pointer';
 
     // Add Image to div and append to sidebar
     divContainer.appendChild(elem);
@@ -441,15 +457,13 @@ function cancelDelete() {
     idToBeDeleted = undefined;
 }
 
-async function sendDeleteReportRequest(text) {
-    if(!idToBeDeleted)
-        return;
-
-    let url = '/admin/deleteReport';
+async function resolveLocation(id) {
+    let url = '/admin/resolveReport';
     let h = new Headers();
     h.append('Content-type', 'application/json');
+    h.append('authorization', 'Bearer ' + adminToken);
 
-    let json = { id: idToBeDeleted, text: text };
+    let json = { resolvedLocation: id };
     let req = new Request(url, {
         headers: h,
         body: JSON.stringify(json),
@@ -458,6 +472,31 @@ async function sendDeleteReportRequest(text) {
     const response = await fetch(req);
     if(response.ok) {
         if(response.status == 200) {
+            prepareToRefreshMarkers();
+            window.alert("Posição marcada como resolvida!");
+        }
+    }
+}
+
+async function sendDeleteReportRequest(text, blockUser) {
+    if(!idToBeDeleted)
+        return;
+
+    let url = '/admin/deleteReport';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
+    h.append('authorization', 'Bearer ' + adminToken);
+
+    let json = { id: idToBeDeleted, text: text, blockUser: blockUser };
+    let req = new Request(url, {
+        headers: h,
+        body: JSON.stringify(json),
+        method: 'POST'
+    });
+    const response = await fetch(req);
+    if(response.ok) {
+        if(response.status == 200) {
+            prepareToRefreshMarkers();
             window.alert("Reporte deletado com sucesso!");
             const e = document.getElementById('deleteReportDiv');
             e.style.visibility = 'hidden';
@@ -465,4 +504,83 @@ async function sendDeleteReportRequest(text) {
         }
     }
     window.alert("Erro ao excluir, por favor tente navamente");
+}
+
+function prepareToRefreshMarkers() {
+    var req = new XMLHttpRequest();
+    req.open('GET', '/map/getReports', true);
+    req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
+    req.send();
+
+    req.onreadystatechange = function() {
+        if (req.readyState == 4 && req.status == 200) {
+            var response = JSON.parse(req.responseText);
+            points = response;
+            refreshMarkers();
+        }
+    }
+}
+
+function refreshMarkers() {
+    sideBarVisible(false);
+    clearCurrentSideBar();
+    setMapOnAll(null);
+    markers = [];
+    loadMarkers();
+    setMapOnAll(map);
+}
+
+function openImageZoom(id) {
+    const zoomDiv = document.getElementById('imageZoomDiv');
+    var report;
+    for(var i = 0; i < pointInfo.length; i++) {
+        if(pointInfo[i].reportId == id) {
+            report = pointInfo[i];
+            break;
+        }
+    }
+
+    //Append image to div
+    var img = document.createElement("img");
+    img.id = 'zoomImg';
+    img.src = "data:image/jpg;base64, " + report.image;
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+
+    //Append user description to div
+    var desc = document.createElement('p');
+    desc.id = 'zoomDesc';
+    desc.style.fontSize = '20px';
+    desc.innerHTML = 'Descrição: ' + report.description;
+
+    var btnClose = document.createElement('button');
+    btnClose.id = 'zoomBtnClose';
+    btnClose.innerHTML = "Fechar";
+    btnClose.onclick = function() { closeZoom(true); };
+
+    zoomDiv.appendChild(img);
+    zoomDiv.appendChild(desc);
+    zoomDiv.appendChild(btnClose);
+
+    //Id admin append delete button
+    if(adminToken != undefined && adminToken.length > 0) {
+        var deleteThisBtn = document.createElement('button');
+        deleteThisBtn.id = 'zoomBtnDelete';
+        deleteThisBtn.innerHTML = 'Deletar esse reporte';
+        deleteThisBtn.onclick = function() {
+            closeZoom(false);
+            openImageControl(id);
+        };
+        zoomDiv.appendChild(deleteThisBtn);
+    }
+
+    sideBarVisible(false);
+    zoomDiv.style.visibility = 'visible';
+}
+
+function closeZoom(visible) {
+    const zoomDiv = document.getElementById('imageZoomDiv');
+    zoomDiv.innerHTML = '';
+    zoomDiv.style.visibility = 'hidden';
+    sideBarVisible(visible);
 }

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const UserModel = require('../models/userModel');
 const ReportModel = require('../models/reportModel');
 const PositionModel = require('../models/positionModel');
 const Constants = require('../util/Constants');
@@ -21,10 +22,26 @@ router.post('/getPoint/:id', async (req, res) => {
     const position = await PositionModel.findOne({ _id: id });
     const reportIds = position.reports;
 
-    const reports = await
-    ReportModel.find({ reportId: reportIds});
+    const reports = await ReportModel.find({ reportId: reportIds});
  
+    updateUserHelpInfo(reports);
+
     return res.status(Constants.HTTP_OK).json(reports);
 });
+
+async function updateUserHelpInfo(userLoaded) {
+    var userIds = [];
+    for(let i = 0; i < userLoaded.length; i++) {
+        userIds.push(userLoaded[i].userId);
+    }
+
+    if(userIds.length > 0) {
+        const usersToUpdate = await UserModel.find({ token: { $in: userIds }});
+        for(let i = 0; i< usersToUpdate.length; i++) {
+            usersToUpdate[i].reportViews++;
+            usersToUpdate[i].save();
+        }
+    }
+}
 
 module.exports = router;
