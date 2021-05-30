@@ -107,4 +107,19 @@ router.get("/stats", async (req, res) => {
     return res.status(Constants.HTTP_OK).json(userInfoJson);
 });
 
+router.get("/info", async (req, res) => {
+    console.log("[Server] Get user info");
+    const user = await Utils.isUserValid(req);
+    if(!user) {
+        console.log("[Server] User not valid!");
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    const userInfoJson = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+    };
+    return res.status(Constants.HTTP_OK).json(userInfoJson);
+})
+
 module.exports = router;
