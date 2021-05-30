@@ -22,6 +22,11 @@ const UserSchema = mongoose.Schema({
         enum: ['Pending', 'Active'],
         default: 'Pending'
     },
+    reportViews: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     token: {
         type: String,
         unique: true,
