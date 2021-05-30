@@ -92,4 +92,19 @@ router.post("/validate", async (req, res) => {
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 });
 
+router.get("/stats", async (req, res) => {
+    console.log("[Server] Get user stats");
+    const user = await Utils.isUserValid(req);
+    if(!user) {
+        console.log("[Server] User not valid!");
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    const userInfoJson = {
+        reportViews: user.reportViews,
+        reportSolved: user.reportSolved,
+        reportNumber: user.reportNumber
+    };
+    return res.status(Constants.HTTP_OK).json(userInfoJson);
+});
+
 module.exports = router;

@@ -102,4 +102,31 @@ router.post("/deleteReport", async (req, res) => {
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 });
 
+router.post("/resolveReport", async (req, res) => {
+    console.log("[Server] Resolve Location");
+
+    const admin = await Utils.isAdminValid(req);
+    if(!admin) {
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+
+    const position = await PositionModel.findOneAndDelete({ _id: req.body.resolvedLocation });
+    if(!position) {
+        return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_NOT_FOUND));
+    }
+
+    deleteReportsAndUpdateUserInfo(position.reports);
+
+    return res.status(Constants.HTTP_OK).json(Utils.MESSAGE_SUCCESS);
+});
+
+async function deleteReportsAndUpdateUserInfo(rep) {
+    for(let i = 0; i < rep.length; i++) {
+        const report = await ReportModel.findOneAndDelete({ reportId: rep[i] });
+        const user = await UserModel.findOne({ token: report.userId });
+        user.reportSolved++;
+        user.save();
+    }
+}
+
 module.exports = router;

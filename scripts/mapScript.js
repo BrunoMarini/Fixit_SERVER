@@ -205,6 +205,22 @@ function clearCurrentSideBar() {
 
 function loadSideBarInfo(id) {
     id = id.split("@")[1];
+
+    //Add resolve location button if admin
+    if(adminToken != undefined && adminToken.length > 0) {
+        const btnResolve = document.createElement("button");
+        btnResolve.innerHTML = "Resolver Localização";
+        btnResolve.style.position = "absolute";
+        btnResolve.style.width = "100%";
+        btnResolve.style.right = "0";
+        btnResolve.style.height = "40px";
+        btnResolve.style.borderRadius = "10px";
+        btnResolve.onclick = function() { resolveLocation(id); };
+        const head = document.getElementById("header");
+        head.appendChild(btnResolve);
+        head.style.marginBottom = "60px";
+    }
+
     var req = new XMLHttpRequest();
     req.open('POST', '/map/getPoint/'+id, true);
     req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
@@ -441,6 +457,27 @@ function cancelDelete() {
     idToBeDeleted = undefined;
 }
 
+async function resolveLocation(id) {
+    let url = '/admin/resolveReport';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
+    h.append('authorization', 'Bearer ' + adminToken);
+
+    let json = { resolvedLocation: id };
+    let req = new Request(url, {
+        headers: h,
+        body: JSON.stringify(json),
+        method: 'POST'
+    });
+    const response = await fetch(req);
+    if(response.ok) {
+        if(response.status == 200) {
+            prepareToRefreshMarkers();
+            window.alert("Posição marcada como resolvida!");
+        }
+    }
+}
+
 async function sendDeleteReportRequest(text, blockUser) {
     if(!idToBeDeleted)
         return;
@@ -485,6 +522,8 @@ function prepareToRefreshMarkers() {
 }
 
 function refreshMarkers() {
+    sideBarVisible(false);
+    clearCurrentSideBar();
     setMapOnAll(null);
     markers = [];
     loadMarkers();

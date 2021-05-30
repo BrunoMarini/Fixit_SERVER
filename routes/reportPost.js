@@ -60,8 +60,11 @@ router.post("/new", async (req, res) => {
     
     const savedReport = await report.save(); 
 
-    if(savedPosition && savedReport)
+    if(savedPosition && savedReport) {
+        user.reportNumber++;
+        user.save();
         return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
+    }
 
     console.log("[Server] Error trying to save new report!");
     return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
