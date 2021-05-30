@@ -27,6 +27,16 @@ const UserSchema = mongoose.Schema({
         required: true,
         default: 0
     },
+    reportSolved: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    reportNumber: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     token: {
         type: String,
         unique: true,
