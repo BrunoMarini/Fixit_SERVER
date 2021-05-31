@@ -120,6 +120,6 @@ router.get("/info", async (req, res) => {
         phone: user.phone,
     };
     return res.status(Constants.HTTP_OK).json(userInfoJson);
-})
+});
 
 module.exports = router;
