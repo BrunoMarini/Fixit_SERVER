@@ -93,20 +93,28 @@ module.exports.getFormattedDate = () => {
 /**
  * Return reported points in MapsBox format in order to point in the map
  *
- * @param A list of reported points
+ * @param reports list of reported points
+ * @param isResolved boolean to determinates if it is resolved reports
+ * or not
  *
  * @returns The points in MapBox structure
  */
-module.exports.formatPositions = (reports) => {
+module.exports.formatPositions = (reports, isResolved) => {
    var locations = [];
    for(var i = 0; i  < reports.length; i++) {
         const latLong = reports[i].location.coordinates;
+        let length;
+        if(isResolved) {
+            length = reports[i].reports;
+        } else {
+            length = reports[i].reports.length;
+        }
         var positionInfo = {
             type: reports[i].type,
             lat: latLong[0],
             long: latLong[1],
             id: reports[i]._id,
-            length: reports[i].reports.length
+            length: length
         }
        locations.push(positionInfo);
    }
