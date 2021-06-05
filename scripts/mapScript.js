@@ -419,6 +419,9 @@ function toggleOneTypeOnly() {
 
 function toggleShowResolved() {
     showResolved = !showResolved;
+    closeAllInfoWindows();
+    clearCurrentSideBar();
+    sideBarVisible(false);
     if(showResolved) {
         if(resolvedMarkers && resolvedMarkers.length > 0) {
             setMapOnAll(null);
