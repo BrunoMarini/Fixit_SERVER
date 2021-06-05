@@ -5,6 +5,7 @@ const AdminModel = require('../models/adminModel');
 const ReportModel = require('../models/reportModel');
 const PositionModel = require('../models/positionModel');
 const UserBlackListModel = require('../models/userBlackListModel');
+const ResolvedPositionModel = require('../models/resolvedPositionModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
 const TokenGenerator = require ('uuid-token-generator');
@@ -116,6 +117,7 @@ router.post("/resolveReport", async (req, res) => {
     }
 
     deleteReportsAndUpdateUserInfo(position.reports);
+    savePositionResolved(position);
 
     return res.status(Constants.HTTP_OK).json(Utils.MESSAGE_SUCCESS);
 });
@@ -126,6 +128,38 @@ async function deleteReportsAndUpdateUserInfo(rep) {
         const user = await UserModel.findOne({ token: report.userId });
         user.reportSolved++;
         user.save();
+    }
+}
+
+async function savePositionResolved(pos) {
+    const position = {
+            type: 'Point',
+            coordinates: [pos.location.coordinates[0], pos.location.coordinates[1]]
+        };
+    const resolved = await
+    ResolvedPositionModel.findOne().and([
+        { type: pos.type },
+        { location: {
+                $near: {
+                    $geometry: position,
+                    $maxDistance: 30
+                }
+            }
+        }
+    ]);
+
+    if(resolved) {
+        console.log("[Server] Adding resolved position");
+        resolved.reports += pos.reports.length;
+        resolved.save();
+    } else {
+        console.log("New resolved position");
+        const res = new ResolvedPositionModel({
+            type: pos.type,
+            location: pos.location,
+            reports: pos.reports.length
+        });
+        res.save();
     }
 }
 
