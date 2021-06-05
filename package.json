@@ -12,6 +12,8 @@
     "mongoose": "^5.12.7",
     "nodemailer": "^6.6.0",
     "nodemon": "^2.0.7",
+    "piii": "^4.0.2",
+    "piii-filters": "^1.0.0",
     "uuid-token-generator": "^1.0.0"
   },
   "devDependencies": {},
