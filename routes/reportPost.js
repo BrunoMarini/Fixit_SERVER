@@ -22,9 +22,10 @@ router.post("/new", async (req, res) => {
     const reportId = tokenGen.generate();
 
     const type = req.body.type;
+    const description = Utils.filterOfensiveWords(req.body.description);
 
     const report = new ReportModel({        
-        description: req.body.description,
+        description: description,
         image: req.body.image,
         userId: user.token,
         reportId: reportId

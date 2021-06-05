@@ -1,6 +1,8 @@
 const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
 const UserBlackListModel = require('../models/userBlackListModel');
+const Piii = require("piii");
+const piiiFilters = require("piii-filters");
 
 /* 
  * Auxiliar function to create response JSON 
@@ -119,4 +121,36 @@ module.exports.formatPositions = (reports, isResolved) => {
        locations.push(positionInfo);
    }
    return locations;
+}
+
+/**
+ * Auxiliar function to check if message contains ofensiveWords
+ * and replace it with "*"
+ *
+ * @param {*} message message to identify if has bad-words
+ * 
+ * @returns true in case that message has bad words, otherwise false
+ */
+module.exports.filterOfensiveWords = (message) => {
+    const piii = new Piii({
+        filters: [
+          ...Object.values(piiiFilters),
+          'buceta',
+          'desgraca',
+          'merda',
+          'bosta',
+          'boxta',
+          'vadia',
+          'lazarenta',
+        ],
+        aliases: {
+            a: ['2', '4', '@'],
+            e: ['3', '&'],
+            o: ['0']
+        },
+        censor: badWord => {
+            return /*badWord.charAt(0) + */"*".repeat(badWord.length)
+        }
+    });
+    return piii.filter(message);
 }
