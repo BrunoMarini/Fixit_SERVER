@@ -3,16 +3,25 @@ const router = express.Router();
 const UserModel = require('../models/userModel');
 const ReportModel = require('../models/reportModel');
 const PositionModel = require('../models/positionModel');
+const ResolvedPositionModel = require('../models/resolvedPositionModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
 
 router.get('/getReports', async (req, res) => {
     const positions = await PositionModel.find();
     if(positions) {
-        return res.status(Constants.HTTP_OK).json(Utils.formatPositions(positions));
+        return res.status(Constants.HTTP_OK).json(Utils.formatPositions(positions, false));
     }
     return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
 });
+
+router.get('/getResolved', async (req, res) => {
+    const resolvedPos = await ResolvedPositionModel.find();
+    if(resolvedPos) {
+        return res.status(Constants.HTTP_OK).json(Utils.formatPositions(resolvedPos, true));
+    }
+    return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
+})
 
 router.post('/getPoint/:id', async (req, res) => {
     const id = req.params.id;
