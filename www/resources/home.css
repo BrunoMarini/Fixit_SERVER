@@ -116,7 +116,7 @@ body {
     height: 100%;
     position: absolute;
     visibility:hidden;
-    background-color: rgba(22,22,22,0.5);
+    background-color: #ffff;
 }
 
 .reveal-modal {
@@ -135,7 +135,7 @@ body {
 
 .deleteReport {
     position: fixed;
-    background-color: #e1d1e1;
+    background-color: #ffff;
     padding: 4px;
     top: 50%;
     left: 50%;
@@ -148,7 +148,7 @@ body {
 
 .zoomReport {
     position: fixed;
-    background-color: #e1d1e1;
+    background-color: #ffff;
     padding: 4px;
     top: 50%;
     left: 50%;
