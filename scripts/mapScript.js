@@ -502,6 +502,7 @@ function applyAdminInterface() {
     var elem = document.createElement('a');
     elem.id = "adminControlPanel";
     elem.innerHTML = 'Painel de Controle';
+    elem.onclick = function() { window.open("/adminControlPanel.html"); };
     side.appendChild(elem);
     closeAdminLogin();
 }
