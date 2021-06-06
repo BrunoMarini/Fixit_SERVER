@@ -38,6 +38,30 @@ router.post('/getPoint/:id', async (req, res) => {
     return res.status(Constants.HTTP_OK).json(reports);
 });
 
+router.get('/getReportNumbers', async (req, res) => {
+    const depredations = await PositionModel.find();
+
+    const responseJson = [];
+    let newValue;
+    for(let i = 0; i < depredations.length; i++) {
+        newValue = true;
+        for(let j = 0; j < responseJson.length; j++) {
+            if(responseJson[j].type == depredations[i].type) {
+                responseJson[j].length += depredations[i].reports.length;
+                newValue = false;
+                break;
+            }
+        }
+        if(newValue) {
+            responseJson.push({
+                type: depredations[i].type,
+                length: depredations[i].reports.length
+            });
+        }
+    }
+    return res.status(Constants.HTTP_OK).json(responseJson);
+});
+
 async function updateUserHelpInfo(userLoaded) {
     var userIds = [];
     for(let i = 0; i < userLoaded.length; i++) {
