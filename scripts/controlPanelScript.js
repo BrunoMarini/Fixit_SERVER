@@ -21,7 +21,6 @@ function loadInfo() {
                 reportNumbers = JSON.parse(req.responseText);
             }
         }
-            
     }
 }
 
@@ -57,7 +56,58 @@ function drawPieChart() {
 }
 
 function drawLineChart() {
+    hideAll();
+    console.log("APARECEU AQUI");
+    const req = new XMLHttpRequest();
+    req.open('GET', '/map/getDateIndex', true);
+    req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
+    req.send();
 
+    req.onreadystatechange = function() {
+        if(req.readyState == 4 && req.status == 200) {
+            const reportData = JSON.parse(req.responseText);
+
+            if(reportData.length == 0) {
+                console.log("OPOOOPA DEU BOSTA");
+                return;
+            }
+            //The table is populated assuming the data is already sorted chronologically
+            //Table exemple
+            //  Date    | Type_1 | Type_2 | ... | Type_3
+            //--------- | ------ | ------ | --- | ------
+            //  Day X   | qtdRep | qtdRep | ... | qtdRep
+            //  Day Y   | qtdRep | qtdRep | ... | qtdRep
+            var data = new google.visualization.DataTable();
+            data.addColumn('date', 'Dia');
+            for(let i = 0; i < reportData[0].reports.length; i++) {
+                data.addColumn('number', reportData[0].reports[i].type);
+            }
+
+            const rows = [];
+            for(let i = 0; i < reportData.length; i++) {
+                const temp = [];
+                temp.push(new Date(reportData[i].date));
+                for(let j = 0; j < reportData[i].reports.length; j++) {
+                    temp.push(reportData[i].reports[j].length);
+                }
+                rows.push(temp);
+            }
+            data.addRows(rows);
+
+            var options = {
+                title: 'Reportes ao longo do tempo',
+                curveType: 'function',
+                'width': 'auto',
+                'height': 500,
+                'text-align': 'center',
+                legend: { position: 'bottom' },
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+            showDiv('chart_div');
+        }
+    }
 }
 
 function showDiv(id) {
