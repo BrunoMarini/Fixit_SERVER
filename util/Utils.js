@@ -1,6 +1,8 @@
 const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
 const UserBlackListModel = require('../models/userBlackListModel');
+const Piii = require("piii");
+const piiiFilters = require("piii-filters");
 
 /* 
  * Auxiliar function to create response JSON 
@@ -93,22 +95,62 @@ module.exports.getFormattedDate = () => {
 /**
  * Return reported points in MapsBox format in order to point in the map
  *
- * @param A list of reported points
+ * @param reports list of reported points
+ * @param isResolved boolean to determinates if it is resolved reports
+ * or not
  *
  * @returns The points in MapBox structure
  */
-module.exports.formatPositions = (reports) => {
+module.exports.formatPositions = (reports, isResolved) => {
    var locations = [];
    for(var i = 0; i  < reports.length; i++) {
         const latLong = reports[i].location.coordinates;
+        let length;
+        if(isResolved) {
+            length = reports[i].reports;
+        } else {
+            length = reports[i].reports.length;
+        }
         var positionInfo = {
             type: reports[i].type,
             lat: latLong[0],
             long: latLong[1],
             id: reports[i]._id,
-            length: reports[i].reports.length
+            length: length
         }
        locations.push(positionInfo);
    }
    return locations;
+}
+
+/**
+ * Auxiliar function to check if message contains ofensiveWords
+ * and replace it with "*"
+ *
+ * @param {*} message message to identify if has bad-words
+ * 
+ * @returns true in case that message has bad words, otherwise false
+ */
+module.exports.filterOfensiveWords = (message) => {
+    const piii = new Piii({
+        filters: [
+          ...Object.values(piiiFilters),
+          'buceta',
+          'desgraca',
+          'merda',
+          'bosta',
+          'boxta',
+          'vadia',
+          'lazarenta',
+        ],
+        aliases: {
+            a: ['2', '4', '@'],
+            e: ['3', '&'],
+            o: ['0']
+        },
+        censor: badWord => {
+            return /*badWord.charAt(0) + */"*".repeat(badWord.length)
+        }
+    });
+    return piii.filter(message);
 }

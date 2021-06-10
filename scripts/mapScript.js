@@ -1,10 +1,12 @@
 let map, heatMap, cluster;
 let pointInfo;
-let points;
+let points, resolvedPoints;
 let idToBeDeleted = undefined;
 let markers = [];
+let resolvedMarkers = [];
 let infoWindows = [];
 let adminToken = undefined;
+let showResolved = false;
 let mapStyleClear =
 [{
     "featureType": "poi",
@@ -61,7 +63,7 @@ function loadFunc(token, env) {
                 });
 
                 addPanToCurrentLocationButton();
-                loadMarkers();
+                loadMarkers(false);
 
                 cluster = new MarkerClusterer(map, markers, {
                     ignoreHidden: true,
@@ -113,36 +115,57 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     infoWindow.open(map);
 }
 
-function loadMarkers() {
-    for(i = 0; i < points.length; i++) {
-        const latLng = new google.maps.LatLng(points[i].lat, points[i].long);
+function loadMarkers(isResolved) {
+    let values;
+    if(isResolved) {
+        values = resolvedPoints;
+    } else {
+        values = points;
+    }
+    for(i = 0; i < values.length; i++) {
+        const latLng = new google.maps.LatLng(values[i].lat, values[i].long);
 
-        const markerUrl = chooseMarkerColor(points[i].type);
+        const markerUrl = chooseMarkerColor(values[i].type);
         const marker = new google.maps.Marker({
             position: latLng,
-            title: points[i].type,
+            title: values[i].type,
             icon: {
                 url: markerUrl
             }
         });
 
         const infoWindow = new google.maps.InfoWindow({
-            content: getMarkerTitle(points[i].type, points[i].length)
+            content: getMarkerTitle(values[i].type, values[i].length)
         });
 
-        marker.set("id", points[i].type + "@" + points[i].id);
+        marker.set("id", values[i].type + "@" + values[i].id);
 
-        marker.addListener('click', () => {
-            clearCurrentSideBar();
-            sideBarVisible(true);
-            map.setZoom(20);
-            map.setCenter(marker.getPosition());
-            closeAllInfoWindows();
-            infoWindow.open(marker.get('map'), marker);
-            loadSideBarInfo(marker.get("id"));
-        });
+        if(isResolved) {
+            marker.addListener('click', () => {
+                clearCurrentSideBar();
+                map.setZoom(20);
+                map.setCenter(marker.getPosition());
+                closeAllInfoWindows();
+                infoWindow.open(marker.get('map'), marker);
+            });
+        } else {
+            marker.addListener('click', () => {
+                clearCurrentSideBar();
+                sideBarVisible(true);
+                map.setZoom(20);
+                map.setCenter(marker.getPosition());
+                closeAllInfoWindows();
+                infoWindow.open(marker.get('map'), marker);
+                loadSideBarInfo(marker.get("id"));
+            });
+        }
+
         marker.setMap(map);
-        markers.push(marker);
+        if(isResolved) {
+            resolvedMarkers.push(marker);
+        } else {
+            markers.push(marker);
+        }
         infoWindows.push(infoWindow);
     }
 }
@@ -345,6 +368,12 @@ function setMapOnAll(map) {
     }
 }
 
+function setMapOnAllResolved(map) {
+    for(let i = 0; i < resolvedMarkers.length; i++) {
+        resolvedMarkers[i].setMap(map);
+    }
+}
+
 function getHeatMapData() {
     var heatMapData = [];
     if(points.length > 0) {
@@ -385,6 +414,36 @@ function toggleOneTypeOnly() {
 
         for(var i = 0; i < elem.length; i++)
             d.appendChild(elem[i]);
+    }
+}
+
+function toggleShowResolved() {
+    showResolved = !showResolved;
+    closeAllInfoWindows();
+    clearCurrentSideBar();
+    sideBarVisible(false);
+    if(showResolved) {
+        if(resolvedMarkers && resolvedMarkers.length > 0) {
+            setMapOnAll(null);
+            setMapOnAllResolved(map);
+        } else {
+            var req = new XMLHttpRequest();
+            req.open('GET', '/map/getResolved/', true);
+            req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
+
+            req.onreadystatechange = function() {
+                if (req.readyState == 4 && req.status == 200) {
+                    var response = JSON.parse(req.responseText);
+                    resolvedPoints = response;
+                    setMapOnAll(null);
+                    loadMarkers(true);
+                }
+            }
+            req.send();
+        }
+    } else {
+        setMapOnAll(map);
+        setMapOnAllResolved(null);
     }
 }
 
@@ -443,6 +502,7 @@ function applyAdminInterface() {
     var elem = document.createElement('a');
     elem.id = "adminControlPanel";
     elem.innerHTML = 'Painel de Controle';
+    elem.onclick = function() { window.open("/adminControlPanel.html"); };
     side.appendChild(elem);
     closeAdminLogin();
 }
@@ -526,7 +586,7 @@ function refreshMarkers() {
     clearCurrentSideBar();
     setMapOnAll(null);
     markers = [];
-    loadMarkers();
+    loadMarkers(false);
     setMapOnAll(map);
 }
 
