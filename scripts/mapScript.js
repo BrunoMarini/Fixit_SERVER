@@ -219,6 +219,13 @@ function sideBarVisible(visible) {
     }
 }
 
+function clearScreen() {
+    const sideBar = document.getElementById("sideBar");
+    sideBar.style.visibility = "hidden";
+    closeAllInfoWindows();
+    clearCurrentSideBar();
+}
+
 function clearCurrentSideBar() {
     const sideBar = document.getElementById("images");
     while(sideBar.firstChild) {
@@ -419,9 +426,7 @@ function toggleOneTypeOnly() {
 
 function toggleShowResolved() {
     showResolved = !showResolved;
-    closeAllInfoWindows();
-    clearCurrentSideBar();
-    sideBarVisible(false);
+    clearScreen();
     if(showResolved) {
         if(resolvedMarkers && resolvedMarkers.length > 0) {
             setMapOnAll(null);
