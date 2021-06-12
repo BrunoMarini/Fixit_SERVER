@@ -46,7 +46,16 @@ router.post("/new", async (req, res) => {
     var savedPosition = undefined;
     //If reported position already exists
     if(currentPositions) {
-        console.log("[Server] Position already registered!");
+        console.log("[Server] Position found! Checking if user already reported");
+
+        const reports = await ReportModel.find({ reportId: currentPositions.reports });
+        for(let i = 0; i < reports.length; i++) {
+            if(reports[i].userId == user.token) {
+                console.log("[Server] Already reported. Returning");
+                return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REQUEST_CONFLICT));
+            }
+        }
+
         currentPositions.reports.push(reportId);
         savedPosition = await currentPositions.save();
     } else {
