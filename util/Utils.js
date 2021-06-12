@@ -1,8 +1,10 @@
 const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
+const PositionModel = require('../models/positionModel');
 const UserBlackListModel = require('../models/userBlackListModel');
 const Piii = require("piii");
 const piiiFilters = require("piii-filters");
+const haversine = require("haversine-distance");
 
 /* 
  * Auxiliar function to create response JSON 
@@ -93,17 +95,17 @@ module.exports.getFormattedDate = () => {
 }
 
 /**
- * Return reported points in MapsBox format in order to point in the map
+ * Return reported points in order to populate map
  *
  * @param reports list of reported points
  * @param isResolved boolean to determinates if it is resolved reports
  * or not
  *
- * @returns The points in MapBox structure
+ * @returns Points
  */
 module.exports.formatPositions = (reports, isResolved) => {
    var locations = [];
-   for(var i = 0; i  < reports.length; i++) {
+   for(let i = 0; i  < reports.length; i++) {
         const latLong = reports[i].location.coordinates;
         let length;
         if(isResolved) {
@@ -111,16 +113,57 @@ module.exports.formatPositions = (reports, isResolved) => {
         } else {
             length = reports[i].reports.length;
         }
-        var positionInfo = {
-            type: reports[i].type,
-            lat: latLong[0],
-            long: latLong[1],
-            id: reports[i]._id,
-            length: length
+
+        const valid = isDistanceValid(locations, latLong);
+        if(valid != -1) {
+            locations[valid].type = 'Multiple';
+            locations[valid].length += length;
+        } else {
+            var positionInfo = {
+                type: reports[i].type,
+                lat: latLong[0],
+                long: latLong[1],
+                id: reports[i]._id,
+                length: length
+            }
+           locations.push(positionInfo);
         }
-       locations.push(positionInfo);
    }
    return locations;
+}
+
+function isDistanceValid(locations, coordinate) {
+    const point2 = { lat: coordinate[0], lng: coordinate[1] };
+    for(let i = 0; i < locations.length; i++) {
+        const point1 = { lat: locations[i].lat, lng: locations[i].long };
+        const dist = haversine(point1, point2);
+        if(dist < 10) return i;
+    }
+    return -1;
+}
+
+/**
+ * Auxiliar function to return all near position
+ *
+ * @param {*} position position to find the near ones
+ * @returns an array list of report IDs
+ */
+module.exports.getNearReports = async (position) => {
+    const reportIds = position.reports;
+    const coordinates = position.location.coordinates;
+    const point = { type: 'Point', coordinates: [coordinates[0], coordinates[1]] };
+    const nearReports = await
+    PositionModel.find({
+        location: {
+            $near: {
+                $geometry: point,
+                $maxDistance: 10
+            }
+        }
+    });
+    for(let i = 0; i < nearReports.length; i++)
+        reportIds.push.apply(reportIds, nearReports[i].reports);
+    return reportIds;
 }
 
 /**

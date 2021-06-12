@@ -193,17 +193,19 @@ function translateType(type) {
         case 'Leak':        return 'Vazamento';
         case 'Garbage':     return 'Depósito de lixo';
         case 'Flood':       return 'Alagamento';
+        case 'Multiple':    return 'Multiplos Tipos';
     }
 }
 
 function chooseMarkerColor(type) {
     var dot;
     switch (type) {
-        case 'Depredation': dot = 'blue';     break;
+        case 'Depredation': dot = 'blue';   break;
         case 'Road':        dot = 'green';  break;
         case 'Leak':        dot = 'pink';   break;
         case 'Garbage':     dot = 'yellow'; break;
         case 'Flood':       dot = 'purple'; break;
+        default: return  './img/multipleIcon.png';
     }
     return ('http://maps.google.com/mapfiles/ms/icons/' + dot + '-dot.png');
 }
@@ -233,7 +235,8 @@ function clearCurrentSideBar() {
     }
 }
 
-function loadSideBarInfo(id) {
+async function loadSideBarInfo(id) {
+    const type = id.split("@")[0];
     id = id.split("@")[1];
 
     //Add resolve location button if admin
@@ -251,20 +254,26 @@ function loadSideBarInfo(id) {
         head.style.marginBottom = "60px";
     }
 
-    var req = new XMLHttpRequest();
-    req.open('POST', '/map/getPoint/'+id, true);
-    req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
+    let url = '/map/getPoint';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
 
-    req.onreadystatechange = function() {
-        if (req.readyState == 4 && req.status == 200) {
-            const response = JSON.parse(req.responseText);
-            pointInfo = response;
-            for(var i = 0; i < response.length; i++) {
-                appendChild(response[i].reportId, response[i].image);
-            }
+    let json = { id: id, type: type };
+    let req = new Request(url, {
+        headers: h,
+        body: JSON.stringify(json),
+        method: 'POST'
+    });
+
+    const res = await fetch(req);
+
+    if(res.ok) {
+        const response = await res.json();
+        pointInfo = response;
+        for(var i = 0; i < response.length; i++) {
+            appendChild(response[i].reportId, response[i].image);
         }
     }
-    req.send();
 }
 
 function appendChild(id, image) {
