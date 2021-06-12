@@ -6,6 +6,7 @@ const PositionModel = require('../models/positionModel');
 const ResolvedPositionModel = require('../models/resolvedPositionModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
+const url = require('url');
 
 router.get('/getReports', async (req, res) => {
     const positions = await PositionModel.find();
@@ -23,18 +24,25 @@ router.get('/getResolved', async (req, res) => {
     return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
 })
 
-router.post('/getPoint/:id', async (req, res) => {
-    const id = req.params.id;
+router.post('/getPoint/', async (req, res) => {
+    const id = req.body.id;
+    const type = req.body.type;
+
     if(!id) {
         return status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_NOT_FOUND));
     }
-    const position = await PositionModel.findOne({ _id: id });
-    const reportIds = position.reports;
+
+    let reportIds;
+    let positions = await PositionModel.findOne({ _id: id });
+    if(type == 'Multiple') {
+        reportIds = await Utils.getNearReports(positions);
+    } else {
+        reportIds = positions.reports;
+    }
 
     const reports = await ReportModel.find({ reportId: reportIds});
- 
-    updateUserHelpInfo(reports);
 
+    updateUserHelpInfo(reports);
     return res.status(Constants.HTTP_OK).json(reports);
 });
 
