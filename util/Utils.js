@@ -121,8 +121,8 @@ module.exports.formatPositions = (reports, isResolved) => {
         } else {
             var positionInfo = {
                 type: reports[i].type,
-                lat: latLong[0],
-                long: latLong[1],
+                lat: latLong[1],
+                long: latLong[0],
                 id: reports[i]._id,
                 length: length
             }
@@ -133,7 +133,7 @@ module.exports.formatPositions = (reports, isResolved) => {
 }
 
 function isDistanceValid(locations, coordinate) {
-    const point2 = { lat: coordinate[0], lng: coordinate[1] };
+    const point2 = { lat: coordinate[1], lng: coordinate[0] };
     for(let i = 0; i < locations.length; i++) {
         const point1 = { lat: locations[i].lat, lng: locations[i].long };
         const dist = haversine(point1, point2);
