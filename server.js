@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/abc', (req, res) => {
+    console.log("[Server] Test python");
     const python = spawn(
         process.env.PYTHON_BIN,
         [
