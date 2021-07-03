@@ -1,9 +1,10 @@
 const fs = require('fs');
 const Crypto = require('crypto');
-var deepai = require("deepai");
+const deepai = require("deepai");
 const Piii = require("piii");
 const piiiFilters = require("piii-filters");
 const Utils = require('./Utils');
+const path = require('path');
 
 /**
  * Auxiliar function to check if reported images contains
@@ -25,7 +26,8 @@ module.exports.filterOfensiveImage = async (img) => {
                 };
 
     const fileName = await Crypto.randomBytes(12).toString('hex') + '.jpg';
-    const filePath = './public/temp/'+fileName;
+    const filePath = path.join(__dirname + '/../public/temp/' + fileName);
+    const pubLink = "https://fixit-city.herokuapp.com/temp/"+fileName;
 
     fs.writeFileSync(filePath, img, { encoding: 'base64' }, function(err) {
         if (err) {
@@ -35,12 +37,14 @@ module.exports.filterOfensiveImage = async (img) => {
             console.log("[Server] File converted from base64!");            
         }
     });
-
+    console.log("[Server] Image write on " + filePath);
+    console.log("[Server] Image accessible on " + pubLink);
     if (process.env.NODE_ENV == 'prod') {
+        console.log("[Server] Calling validation API");
         var result = await deepai.callStandardApi("content-moderation", {
-            image: "https://fixit-city.herokuapp.com/temp/"+fileName
+            image: pubLink
         });
-    
+
         ret.score = result.output.nsfw_score;
         if (ret.score > 0.60) {
             ret.isNude = true;

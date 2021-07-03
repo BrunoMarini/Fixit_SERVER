@@ -13,8 +13,6 @@ app.use(express.static('public'));
 app.use(express.static('scripts'));
 //app.all('/img/mapbox-icon.png', (req, res) => { res.sendFile(fetchFile("/public/img/mapbox-icon.png")); });
 
-const {spawn} = require('child_process');
-
 /* HTML requests */
 app.get('/', (req, res) => { 
     res.render(fetchFile('/www/home.html'),
