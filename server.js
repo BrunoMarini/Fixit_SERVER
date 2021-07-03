@@ -24,36 +24,6 @@ app.get('/', (req, res) => {
     }) 
 });
 
-app.get('/abc', (req, res) => {
-    console.log("[Server] Test python");
-    /*const python = spawn(
-        process.env.PYTHON_BIN,
-        [
-            'scripts/pythonScripts/nudeDetection.py',
-            'aoba'
-        ]
-    );
-
-    var result = "";
-
-    python.stdout.on('data', function (data) {
-        console.log('[Server] Result python script: ' + data);
-        result = data.toString();
-    });
-
-    python.stderr.on('data', function(data) {
-        console.log('[Server] Error python: ' + data);
-    });
-
-    python.on('close', function(code) {
-        console.log("[Server] On close: " + code);
-        result = result.split("Result:")[1];
-        var isNude = result.split('@')[0].split(":")[1];
-        var score = result.split('@')[1].split(":")[1];
-        res.status(200).json({ isNude: isNude, score: score });
-    });*/
-});
-
 /* Import default routes */
 const adminPost = require('./routes/adminPost');
 app.use('/admin', adminPost);
