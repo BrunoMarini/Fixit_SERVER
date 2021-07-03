@@ -4,6 +4,7 @@ const Utils = require('../util/Utils');
 const Constants = require('../util/Constants');
 const ReportModel = require('../models/reportModel');
 const PositionModel = require('../models/positionModel');
+const ReportValidation = require('../util/reportValidationScript');
 const TokenGenerator = require('uuid-token-generator');
 const fs = require('fs');
 
@@ -15,6 +16,12 @@ router.post("/new", async (req, res) => {
         return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
+    const base64image = req.body.image;
+    const imgResult = await ReportValidation.filterOfensiveImage(base64image);
+    if (imgResult.isNude) {
+        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_UNAPPROPRIATED_REPORT));
+    }
+
     const coordinates = req.body.coordinates;
     const position = { type: 'Point', coordinates: [coordinates[0], coordinates[1]] };
 
@@ -22,11 +29,11 @@ router.post("/new", async (req, res) => {
     const reportId = tokenGen.generate();
 
     const type = req.body.type;
-    const description = Utils.filterOfensiveWords(req.body.description);
+    const description = ReportValidation.filterOfensiveWords(req.body.description);
 
     const report = new ReportModel({        
         description: description,
-        image: req.body.image,
+        image: base64image,
         userId: user.token,
         reportId: reportId
     });

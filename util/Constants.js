@@ -19,6 +19,7 @@ const MESSAGE_WRONG_EMAIL_PASS = "Email e/ou senha incorreto(s)!";
 const MESSAGE_NOT_AUTHORIZED = "Usuário não autorizado!";
 const MESSAGE_NOT_FOUND = "Não encontrado!";
 const MESSAGE_REQUEST_CONFLICT = "Reporte já realizado por esse usuário!";
+const MESSAGE_UNAPPROPRIATED_REPORT = "Reporte inapropriado!";
 
 module.exports = {
     HTTP_OK:                     HTTP_OK,
@@ -38,5 +39,6 @@ module.exports = {
     MESSAGE_WRONG_EMAIL_PASS:    MESSAGE_WRONG_EMAIL_PASS,
     MESSAGE_NOT_AUTHORIZED:      MESSAGE_NOT_AUTHORIZED,
     MESSAGE_NOT_FOUND:           MESSAGE_NOT_FOUND,
-    MESSAGE_REQUEST_CONFLICT:   MESSAGE_REQUEST_CONFLICT
+    MESSAGE_REQUEST_CONFLICT:   MESSAGE_REQUEST_CONFLICT,
+    MESSAGE_UNAPPROPRIATED_REPORT: MESSAGE_UNAPPROPRIATED_REPORT
 }
