@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 
 app.get('/abc', (req, res) => {
     console.log("[Server] Test python");
-    const python = spawn(
+    /*const python = spawn(
         process.env.PYTHON_BIN,
         [
             'scripts/pythonScripts/nudeDetection.py',
@@ -51,7 +51,7 @@ app.get('/abc', (req, res) => {
         var isNude = result.split('@')[0].split(":")[1];
         var score = result.split('@')[1].split(":")[1];
         res.status(200).json({ isNude: isNude, score: score });
-    });
+    });*/
 });
 
 /* Import default routes */

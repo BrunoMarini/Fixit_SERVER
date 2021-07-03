@@ -5,6 +5,7 @@ const UserBlackListModel = require('../models/userBlackListModel');
 const Piii = require("piii");
 const piiiFilters = require("piii-filters");
 const haversine = require("haversine-distance");
+const path = require('path');
 
 /* 
  * Auxiliar function to create response JSON 
@@ -196,4 +197,8 @@ module.exports.filterOfensiveWords = (message) => {
         }
     });
     return piii.filter(message);
+}
+
+module.exports.fetchFile = (filename) => {
+    return path.join(__dirname + "/../" + filename);
 }
