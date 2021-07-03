@@ -13,6 +13,8 @@ app.use(express.static('public'));
 app.use(express.static('scripts'));
 //app.all('/img/mapbox-icon.png', (req, res) => { res.sendFile(fetchFile("/public/img/mapbox-icon.png")); });
 
+const {spawn} = require('child_process');
+
 /* HTML requests */
 app.get('/', (req, res) => { 
     res.render(fetchFile('/www/home.html'),
@@ -20,6 +22,35 @@ app.get('/', (req, res) => {
         token: process.env.MAPS_TOKEN,
         env: process.env.NODE_ENV  
     }) 
+});
+
+app.get('/abc', (req, res) => {
+    const python = spawn(
+        process.env.PYTHON_BIN,
+        [
+            'scripts/pythonScripts/nudeDetection.py',
+            'aoba'
+        ]
+    );
+
+    var result = "";
+
+    python.stdout.on('data', function (data) {
+        console.log('[Server] Result python script: ' + data);
+        result = data.toString();
+    });
+
+    python.stderr.on('data', function(data) {
+        console.log('[Server] Error python: ' + data);
+    });
+
+    python.on('close', function(code) {
+        console.log("[Server] On close: " + code);
+        result = result.split("Result:")[1];
+        var isNude = result.split('@')[0].split(":")[1];
+        var score = result.split('@')[1].split(":")[1];
+        res.status(200).json({ isNude: isNude, score: score });
+    });
 });
 
 /* Import default routes */
