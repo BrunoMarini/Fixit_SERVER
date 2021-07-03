@@ -164,7 +164,3 @@ module.exports.getNearReports = async (position) => {
         reportIds.push.apply(reportIds, nearReports[i].reports);
     return reportIds;
 }
-
-module.exports.fetchFile = (filename) => {
-    return path.join(__dirname + "/../" + filename);
-}
