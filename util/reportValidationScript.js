@@ -29,9 +29,6 @@ module.exports.filterOfensiveImage = async (img) => {
     const filePath = path.join(__dirname + '/../public/temp/' + fileName);
     const pubLink = "https://fixit-city.herokuapp.com/temp/"+fileName;
 
-    console.log("[Server] Image write on " + filePath);
-    console.log("[Server] Image accessible on " + pubLink);
-
     fs.writeFileSync(filePath, img, { encoding: 'base64' }, function(err) {
         if (err) {
             console.log("[Server] Error converting file");
@@ -42,7 +39,7 @@ module.exports.filterOfensiveImage = async (img) => {
     console.log("[Server] Image write on " + filePath);
     console.log("[Server] Image accessible on " + pubLink);
 
-    /*if (process.env.NODE_ENV == 'prod') {
+    if (process.env.NODE_ENV == 'prod') {
         console.log("[Server] Calling validation API");
         var result = await deepai.callStandardApi("content-moderation", {
             image: pubLink
@@ -59,9 +56,9 @@ module.exports.filterOfensiveImage = async (img) => {
         }
     }
 
-    fs.unlinkSync(filePath);*/
+    fs.unlinkSync(filePath);
 
-    console.log("Result: ", ret);
+    console.log("[Server] Result: ", ret);
     return ret;
 }
 
