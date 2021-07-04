@@ -66,10 +66,26 @@ module.exports.isAdminValid = async(req) => {
  * @param {NullAble} email to verify
  * @param {NullAble} phone to verify
  *
- * @returns true if email of phone are blacklisted, false otherwise
+ * @returns true if email or phone are blacklisted, false otherwise
  */
 module.exports.isBlocked = async(email, phone) => {
     const exist = await UserBlackListModel.findOne().or([
+        { email: email },
+        { phone: phone }
+    ]);
+    return (exist ? true : false);
+}
+
+/**
+ * Auxiliar function to verify if current email or password are registered
+ *
+ * @param {NullAble} email to verify
+ * @param {NullAble} phone to verify
+ *
+ * @returns true if email or phone are registered, false otherwise
+ */
+module.exports.isRegistered = async(email, phone) => {
+    const exist = await UserModel.findOne().or([
         { email: email },
         { phone: phone }
     ]);

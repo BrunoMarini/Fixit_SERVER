@@ -6,7 +6,6 @@ const emailAuth = require('./emailAuth');
 const UserModel = require('../models/userModel');
 const TokenGenerator = require ('uuid-token-generator');
 
-
 /* Request to register a new user */
 router.post("/register", async (req, res) => {
     try {
@@ -18,14 +17,8 @@ router.post("/register", async (req, res) => {
             return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
         }
 
-        // Search for users with the same email or phone 
-        const existUser = await UserModel.findOne().or([
-            { email: req.body.email},
-            { phone: req.body.phone}
-        ]);
-
         // Check if user already exist in DB
-        if(existUser) {
+        if(await Utils.isRegistered(req.body.email, req.body.phone)) {
             console.log("[Server] User alredy registered");
             return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
@@ -80,6 +73,47 @@ router.post("/login", async (req, res) => {
         console.log(err);
         return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(err));
     }
+});
+
+router.post("/updateRegister", async (req, res) => {
+    console.log("[Server] Updating user register");
+    const user = await Utils.isUserValid(req);
+
+    if (!user) {
+        console.log("[Server] Invalid user tried to update register");
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+
+    if (req.body.oldPassword != user.password) {
+        return res.status(Constants.HTTP_PRECONDITION_FAILED).json(Utils.createJson(Constants.MESSAGE_OLD_PASSWORD_NOT_VALID));
+    }
+
+    let changed = false;
+    if (req.body.phone != undefined && req.body.phone != user.phone) {
+        if (await Utils.isRegistered(undefined, req.body.phone)) {
+            return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_PHONE_REGISTERED));
+        }
+        changed = true;
+        user.phone = req.body.phone;
+    }
+    if (req.body.name != undefined && req.body.name != user.name) {
+        changed = true;
+        user.name = req.body.name;
+    }
+    if (req.body.newPassword != undefined && req.body.newPassword != user.password) {
+        changed = true;
+        user.password = req.body.newPassword;
+    }
+
+    let saved = undefined;
+    if (changed) {
+        saved = await user.save();
+        if (saved) {
+            return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_UPDATED_SUCCESSFULLY));
+        }
+        return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
+    }
+    return res.status(Constants.HTTP_NOT_ACCEPTABLE).json(Utils.createJson(Constants.MESSAGE_NO_UPDATE_NECESSARY));
 });
 
 router.post("/validate", async (req, res) => {
