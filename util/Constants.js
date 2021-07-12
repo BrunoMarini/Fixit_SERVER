@@ -8,6 +8,9 @@ const HTTP_INTERNAL_SERVER_ERROR = 500;
 const HTTP_PRECONDITION_FAILED = 412;
 const HTTP_NOT_ACCEPTABLE = 406;
 
+// Constants
+const MAXIMUM_STRIKE_LIMIT = 3;
+
 // Messages
 const MESSAGE_SUCCESS = "Success";
 const MESSAGE_REGISTER_SUCCESS = "Usuário foi autenticado com sucesso!";
@@ -28,6 +31,7 @@ const MESSAGE_NO_UPDATE_NECESSARY = "Nenhuma atualização foi necessária";
 const MESSAGE_PHONE_REGISTERED = "Telefone já cadastrado!";
 
 module.exports = {
+    MAXIMUM_STRIKE_LIMIT:           MAXIMUM_STRIKE_LIMIT,
     HTTP_OK:                        HTTP_OK,
     HTTP_UNAUTHORIZED:              HTTP_UNAUTHORIZED,
     HTTP_FORBIDDEN:                 HTTP_FORBIDDEN,

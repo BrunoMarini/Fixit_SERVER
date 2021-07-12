@@ -4,6 +4,7 @@ const PositionModel = require('../models/positionModel');
 const UserBlackListModel = require('../models/userBlackListModel');
 const haversine = require("haversine-distance");
 const path = require('path');
+const Constants = require('./Constants');
 
 /* 
  * Auxiliar function to create response JSON 
@@ -179,4 +180,46 @@ module.exports.getNearReports = async (position) => {
     for(let i = 0; i < nearReports.length; i++)
         reportIds.push.apply(reportIds, nearReports[i].reports);
     return reportIds;
+}
+
+/**
+ * Auxiliar function to block user
+ *
+ * @param {*} token of user to be blocked
+ * @return true in case of success, otherwise false
+ */
+module.exports.blockUser = async (userToken) => {
+    const userToBeBlocked = await UserModel.findOneAndDelete({ token: userToken });
+    if(userToBeBlocked) {
+        const blocked = new UserBlackListModel({
+            email: userToBeBlocked.email,
+            phone: userToBeBlocked.phone
+        });
+        const saved = await blocked.save();
+        if(saved) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Auxiliar function to strike user and block if the limite is
+ * achieved
+ *
+ * @see MAXIMUM_STRIKE_LIMIT
+ * @param user to be striked
+ * @returns true in case of operation success, otherwise false
+ */
+module.exports.updateUserStrikes = async (user) => {
+    user.strikes++;
+    if (user.strikes >= Constants.MAXIMUM_STRIKE_LIMIT) {
+        return await this.blockUser(user.token);
+    } else {
+        const saved = await user.save();
+        if (saved) {
+            return true
+        }
+    }
+    return false;
 }

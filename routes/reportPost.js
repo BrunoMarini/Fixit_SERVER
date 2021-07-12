@@ -12,13 +12,14 @@ router.post("/new", async (req, res) => {
     const user = await Utils.isUserValid(req);
 
     if(!user) {
-        console.log("[Server] Unvalid user tried to create a report!");
+        console.log("[Server] Invalid user tried to create a report!");
         return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
     const base64image = req.body.image;
     const imgResult = await ReportValidation.filterOfensiveImage(base64image);
     if (imgResult.isNude) {
+        Utils.updateUserStrikes(user);
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_UNAPPROPRIATED_REPORT));
     }
 

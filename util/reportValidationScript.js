@@ -19,7 +19,7 @@ module.exports.filterOfensiveImage = async (img) => {
     console.log("[Server] Validating image");
     deepai.setApiKey(process.env.DEEPAI_API_KEY);
 
-    const ret = { 
+    const ret = {
                     isNude: false,
                     score: 0,
                     detection: []
@@ -39,7 +39,7 @@ module.exports.filterOfensiveImage = async (img) => {
     console.log("[Server] Image write on " + filePath);
     console.log("[Server] Image accessible on " + pubLink);
 
-    if (process.env.NODE_ENV == 'prod') {
+    if (process.env.NODE_ENV == process.env.NODE_ENV_PROD) {
         console.log("[Server] Calling validation API");
         var result = await deepai.callStandardApi("content-moderation", {
             image: pubLink
@@ -54,6 +54,8 @@ module.exports.filterOfensiveImage = async (img) => {
                 ret.detection.push(name);
             }
         }
+    } else {
+
     }
 
     fs.unlinkSync(filePath);

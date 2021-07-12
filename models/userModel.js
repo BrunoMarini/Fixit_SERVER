@@ -37,6 +37,11 @@ const UserSchema = mongoose.Schema({
         required: true,
         default: 0
     },
+    strikes: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     token: {
         type: String,
         unique: true,

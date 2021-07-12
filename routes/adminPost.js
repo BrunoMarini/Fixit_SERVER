@@ -87,17 +87,10 @@ router.post("/deleteReport", async (req, res) => {
     }
 
     if(req.body.blockUser) {
-        const userId = report.userId;
-        const blockedUser = await UserModel.findOneAndDelete({ token: userId });
-        if(blockedUser) {
-            const blocked = new UserBlackListModel({
-                email: blockedUser.email,
-                phone: blockedUser.phone
-            });
-            const saved = await blocked.save();
-            if(saved) {
-                console.log("[Server] User blocked!");
-            }
+        if (await Utils.blockUser(report.userId)) {
+            console.log("[Server] User blocked by admin");
+        } else {
+            console.log("[Server] Error during admin bloking user");
         }
     }
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
