@@ -22,11 +22,18 @@ router.post("/register", async (req, res) => {
             console.log("[Server] User alredy registered");
             return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
+            if (req.body.name == undefined || req.body.email == undefined
+                    || req.body.phone == undefined || req.body.password == undefined) {
+                console.log("[Server] Register request has empty fields");
+                return res.status(Constants.HTTP_NOT_ACCEPTABLE).json(Utils.createJson(Constants.MESSAGE_EMPTY_FIELD));
+            }
+
+            const hash = Utils.generatePasswordHash(req.body.password);
             const tokenGen = new TokenGenerator();
             const user = new UserModel({
                 name: req.body.name,
                 email: req.body.email,
-                password: req.body.password,
+                password: hash,
                 phone: req.body.phone,
                 token: tokenGen.generate()
             });
@@ -57,7 +64,7 @@ router.post("/login", async (req, res) => {
 
         const user = await UserModel.findOne({email: req.body.email});
 
-        if(user && user.password == req.body.password) {
+        if(user && Utils.comparePasswordHash(req.body.password, user.password)) {
             if(user.status == "Active") {
                 return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, user.token));
             }
@@ -84,7 +91,7 @@ router.post("/updateRegister", async (req, res) => {
         return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
-    if (req.body.oldPassword != user.password) {
+    if (!Utils.comparePasswordHash(req.body.oldPassword, user.password)) {
         return res.status(Constants.HTTP_PRECONDITION_FAILED).json(Utils.createJson(Constants.MESSAGE_OLD_PASSWORD_NOT_VALID));
     }
 

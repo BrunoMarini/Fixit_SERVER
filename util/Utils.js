@@ -5,6 +5,7 @@ const UserBlackListModel = require('../models/userBlackListModel');
 const haversine = require("haversine-distance");
 const path = require('path');
 const Constants = require('./Constants');
+const Bcrypt = require('bcrypt');
 
 /* 
  * Auxiliar function to create response JSON 
@@ -222,4 +223,25 @@ module.exports.updateUserStrikes = async (user) => {
         }
     }
     return false;
+}
+
+/**
+ * Auxiliar function to create the password hash
+ *
+ * @param password
+ * @returns password hash
+ */
+module.exports.generatePasswordHash = (pass) => {
+    return Bcrypt.hashSync(pass, Constants.SALT_ROUNDS);
+}
+
+/**
+ * Auxiliar function to compare password with stored hash
+ *
+ * @param pass password to compare
+ * @param hash current sored hash
+ * @returns true in case of match, otherwise false
+ */
+module.exports.comparePasswordHash = (pass, hash) => {
+    return Bcrypt.compareSync(pass, hash);
 }

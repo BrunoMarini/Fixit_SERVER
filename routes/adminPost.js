@@ -20,6 +20,11 @@ router.post("/register", async (req, res) => {
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
+    if (req.body.institution == undefined || req.body.sector == undefined || req.body.email == undefined
+            || req.body.phone == undefined || req.body.desc == undefined) {
+        return res.status(Constants.HTTP_NOT_ACCEPTABLE).json(Utils.createJson(Constants.MESSAGE_EMPTY_FIELD));
+    }
+
     const adm = new AdminModel({
         institution: req.body.institution,
         sector: req.body.sector,

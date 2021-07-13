@@ -10,6 +10,7 @@ const HTTP_NOT_ACCEPTABLE = 406;
 
 // Constants
 const MAXIMUM_STRIKE_LIMIT = 3;
+const SALT_ROUNDS = 10;
 
 // Messages
 const MESSAGE_SUCCESS = "Success";
@@ -29,9 +30,11 @@ const MESSAGE_OLD_PASSWORD_NOT_VALID = "A senha antiga não confere com a salva 
 const MESSAGE_UPDATED_SUCCESSFULLY = "Cadastro atualizado com sucesso!";
 const MESSAGE_NO_UPDATE_NECESSARY = "Nenhuma atualização foi necessária";
 const MESSAGE_PHONE_REGISTERED = "Telefone já cadastrado!";
+const MESSAGE_EMPTY_FIELD = "O request possui entradas vaizas!";
 
 module.exports = {
     MAXIMUM_STRIKE_LIMIT:           MAXIMUM_STRIKE_LIMIT,
+    SALT_ROUNDS:                    SALT_ROUNDS,
     HTTP_OK:                        HTTP_OK,
     HTTP_UNAUTHORIZED:              HTTP_UNAUTHORIZED,
     HTTP_FORBIDDEN:                 HTTP_FORBIDDEN,
@@ -56,5 +59,6 @@ module.exports = {
     MESSAGE_OLD_PASSWORD_NOT_VALID: MESSAGE_OLD_PASSWORD_NOT_VALID,
     MESSAGE_UPDATED_SUCCESSFULLY:   MESSAGE_UPDATED_SUCCESSFULLY,
     MESSAGE_NO_UPDATE_NECESSARY:    MESSAGE_NO_UPDATE_NECESSARY,
-    MESSAGE_PHONE_REGISTERED:       MESSAGE_PHONE_REGISTERED
+    MESSAGE_PHONE_REGISTERED:       MESSAGE_PHONE_REGISTERED,
+    MESSAGE_EMPTY_FIELD:            MESSAGE_EMPTY_FIELD
 }
