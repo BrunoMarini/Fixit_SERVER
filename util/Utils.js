@@ -210,7 +210,7 @@ module.exports.blockUser = async (userToken) => {
  *
  * @see MAXIMUM_STRIKE_LIMIT
  * @param user to be striked
- * @returns true in case of operation success, otherwise false
+ * @returns user strikes in case of operation success, otherwise -1
  */
 module.exports.updateUserStrikes = async (user) => {
     user.strikes++;
@@ -219,10 +219,10 @@ module.exports.updateUserStrikes = async (user) => {
     } else {
         const saved = await user.save();
         if (saved) {
-            return true
+            return saved.strikes;
         }
     }
-    return false;
+    return -1;
 }
 
 /**

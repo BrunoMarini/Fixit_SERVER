@@ -19,8 +19,8 @@ router.post("/new", async (req, res) => {
     const base64image = req.body.image;
     const imgResult = await ReportValidation.filterOfensiveImage(base64image);
     if (imgResult.isNude) {
-        Utils.updateUserStrikes(user);
-        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_UNAPPROPRIATED_REPORT));
+        const strikes = await Utils.updateUserStrikes(user);
+        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_UNAPPROPRIATED_REPORT + " " + strikes + "/" + Constants.MAXIMUM_STRIKE_LIMIT));
     }
 
     const coordinates = req.body.coordinates;
