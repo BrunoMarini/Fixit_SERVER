@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 require('dotenv/config');
 process.env.TZ = 'America/Sao_Paulo';
 app.use(express.json());
+app.use(express.urlencoded());
 
 /* Set image folder public */
 app.use(express.static('www'));

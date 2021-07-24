@@ -15,22 +15,23 @@ router.post("/register", async (req, res) => {
     const tokenGen = new TokenGenerator();
     console.log("[Server] Admin register");
 
-    if(await Utils.isBlocked(req.body.email, req.body.phone)) {
+    if (await Utils.isBlocked(req.body.email, req.body.phone)) {
         console.log("[Server] Blocked user tried to request to be admin");
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
-    if (req.body.institution == undefined || req.body.sector == undefined || req.body.email == undefined
-            || req.body.phone == undefined || req.body.desc == undefined) {
+    const userData = req.body;
+    if (userData.institution == undefined || userData.sector == undefined || userData.email == undefined
+            || userData.phone == undefined || userData.desc == undefined) {
         return res.status(Constants.HTTP_NOT_ACCEPTABLE).json(Utils.createJson(Constants.MESSAGE_EMPTY_FIELD));
     }
 
     const adm = new AdminModel({
-        institution: req.body.institution,
-        sector: req.body.sector,
-        email: req.body.email,
-        phone: req.body.phone,
-        description: req.body.desc,
+        institution: userData.institution,
+        sector: userData.sector,
+        email: userData.email,
+        phone: userData.phone,
+        description: userData.desc,
         token: tokenGen.generate()
     });
     const saved = await adm.save();
