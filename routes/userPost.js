@@ -43,7 +43,7 @@ router.post("/register", async (req, res) => {
             console.log("[Server] New user registered!");
 
             // Sending email confirmation
-            emailAuth.sendConfirmationEmail(saved.name, saved.email, saved.token);
+            emailAuth.sendUserConfirmationEmail(saved.name, saved.email, saved.token);
 
             return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_PENDING));
         }
@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
             }
 
             // Resending email confirmation
-            emailAuth.sendConfirmationEmail(user.name, user.email, user.token);
+            emailAuth.sendUserConfirmationEmail(user.name, user.email, user.token);
 
             return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
         } else {

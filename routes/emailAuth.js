@@ -3,34 +3,65 @@ const UserModel = require('../models/userModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
 
-module.exports.sendConfirmationEmail  = function(name, email, confirmationCode) {
-    console.log("[Server] Send confirmation email!");
-   
-    // Fixit email setup
-    const transport = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
+module.exports.sendAdminConfirmationEmail = function(institution, email) {
+    console.log("[Server] Send admin confirmation email!");
 
-    // Set localhost or server for test purpose
-    var link = '', website = '';
-    if(process.env.NODE_ENV == 'prod') {
-        link = "https://fixit-city.herokuapp.com/confirm/" + confirmationCode;
-        website = "https://fixit-city.herokuapp.com/";
-    } else {
-        link = "http://localhost:3030/confirm/" + confirmationCode;
-        website = "http://localhost:3030/";
-    }
+    const transport = getEmailTransport();
+    const website = getWebsiteLink();
 
     const path = require('path');
     const filePath = path.join(__dirname + '/../public/img/logo.png');
 
+    const fixIt = "Contato FixIt <" + process.env.EMAIL_USER + ">";
+
+    //Sending the email
+    transport.sendMail({
+        from: fixIt,
+        to: email,
+        subject: "FixIt: Cadastro de Administrador",
+        html:   `<style>
+                .separation {
+                    border-top:5px;
+                    border-bottom: 0px;
+                    border-left: 0px;
+                    border-right: 0px;
+                    border-style: groove;
+                }
+                </style>
+                <center><img src="cid:unique@kreata.ee"/></center>
+                <h1>Cadastro de Administrador</h1>
+                <h2>Olá, ${institution}!</h2>
+                <p>Sua requisição para se tornar um administrador foi iniciada com sucesso! Nossa equipe está analisando suas informações e logo entraremos em contato!</p>
+                <p>Obrigado pelo seu interesse no FixIt!</p>
+                <br>
+                <p> Enquanto processamos sua requisição você pode acompanhar os reportes no nosso <a href=${website}> WEBSITE </a></p>
+                <p class="separation"></p>
+                <p>Você está recebendo esse email por ter se registrou no FixIt. Caso esse email tenha sido enviado
+                para você por engano, por favor ignore.</p>
+                </div>`,
+        attachments: [{
+            filename: 'logo.png',
+            path: filePath,
+            cid: 'unique@kreata.ee' //same cid value as in the html img src
+        }]
+    }).catch(err => console.log(err));
+}
+
+module.exports.sendUserConfirmationEmail  = function(name, email, confirmationCode) {
+    console.log("[Server] Send user confirmation email!");
+
+    const transport = getEmailTransport();
+    const website = getWebsiteLink();
+    const link = getConfirmationLink(confirmationCode);
+
+    const path = require('path');
+    const filePath = path.join(__dirname + '/../public/img/logo.png');
+
+    const fixIt = "Contato FixIt <" + process.env.EMAIL_USER + ">";
+
     // Sending the email
     transport.sendMail({
-        from: name,
+        from: fixIt,
         to: email,
         subject: "FixIt: Confirmação de conta",
         html:   `<style>
@@ -66,6 +97,34 @@ module.exports.sendConfirmationEmail  = function(name, email, confirmationCode) 
         }]
     }).catch(err => console.log(err));
 };
+
+function getEmailTransport() {
+    // Fixit email setup
+    return transport = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+}
+
+// Localhost or server test purpose
+function getWebsiteLink() {
+    return (process.env.NODE_ENV == process.env.NODE_ENV_PROD ? "https://fixit-city.herokuapp.com/" : "http://localhost:3030/");
+}
+
+// Localhost or server test purpose
+function getConfirmationLink(code) {
+    let link = '';
+    if (process.env.NODE_ENV == process.env.NODE_ENV_PROD) {
+        link = "https://fixit-city.herokuapp.com/confirm/";
+    } else {
+        link = "http://localhost:3030/confirm/";
+    }
+    link += code
+    return link;
+}
 
 module.exports.verifyEmail = (req, res) => {
     console.log("[Server] VerifyEmail");

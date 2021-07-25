@@ -4,7 +4,7 @@ const UserModel = require('../models/userModel');
 const AdminModel = require('../models/adminModel');
 const ReportModel = require('../models/reportModel');
 const PositionModel = require('../models/positionModel');
-const UserBlackListModel = require('../models/userBlackListModel');
+const EmailAuth = require('./emailAuth');
 const ResolvedPositionModel = require('../models/resolvedPositionModel');
 const Constants = require('../util/Constants');
 const Utils = require('../util/Utils');
@@ -34,9 +34,13 @@ router.post("/register", async (req, res) => {
         description: userData.desc,
         token: tokenGen.generate()
     });
+
     const saved = await adm.save();
-    if(saved)
+    if(saved) {
+        EmailAuth.sendAdminConfirmationEmail(saved.institution, saved.email);
+        console.log("[Server] New admin request completed successfully");
         return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
+    }
     return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
 });
 
