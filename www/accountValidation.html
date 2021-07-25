@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <style>
+        #center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -50px;
+            width: 100px;
+            height: 100px;
+            white-space: nowrap;
+        }
+    </style>
+    <head>
+        <title> Validação conta </title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body onload="startCounter()">
+        <div id="center">
+            <a id="message"></a>            
+        </div>
+    </body>
+    <script>
+        let counter = 5;
+        let cancel;
+        let error = "<%= error %>";
+        let message = '';
+        if (error) {
+            message = "Erro ao confirmar o email, tente novamente! Redirecionando em ";
+        } else {
+            message = "Email confirmado com sucesso! Redirecionando em ";
+        }
+
+        function startCounter() {
+            cancel = setInterval(updateMessagevalue, 1000);
+        }
+
+        function updateMessagevalue() {
+            document.getElementById("message").innerHTML = message + counter + "...";;
+            stopIfNeeded();
+        }
+
+        function stopIfNeeded() {
+            if (counter > 0) {
+                counter--;
+                return;
+            }
+            clearInterval(cancel);
+            redirect();
+        }
+
+        function redirect() {
+            window.open("/");
+            window.close();
+        }
+    </script>
+</html>

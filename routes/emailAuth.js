@@ -126,23 +126,25 @@ function getConfirmationLink(code) {
     return link;
 }
 
-module.exports.verifyEmail = (req, res) => {
+module.exports.verifyEmail = async(req, res) => {
     console.log("[Server] VerifyEmail");
-    UserModel
-        .findOne({ token: req.params.confirmationCode})
-        .then((user) => {
-            if(!user) {
-                return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_CONFIRMATION_FAILED));
-            }
+    const user = await UserModel.findOne({ token: req.params.confirmationCode});
 
-            user.status = "Active";
-            user.save((err) => {
-                if(err) {
-                    return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
-                } else {
-                    return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_REGISTER_SUCCESS));
-                }
+    if (!user) {
+        return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_CONFIRMATION_FAILED));
+    }
+
+    let saved = user;
+    if (user.status != "Active") {
+        user.status = "Active";
+        saved = await user.save();
+    }
+
+    return res.render(fetchFile('/../www/accountValidation.html'),
+            {
+                error: (saved ? undefined : true)
             });
-        })
-        .catch((e) => console.log("Error", e));  
 };
+
+const path = require('path');
+function fetchFile(filename) { return path.join(__dirname + filename) };
