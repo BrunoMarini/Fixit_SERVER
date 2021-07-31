@@ -66,6 +66,11 @@
             function closeAdminLogin() {
                 document.getElementById("adminPopUp").style.visibility = "hidden";
             }
+
+            function closeAdminChangePass() {
+                document.getElementById("adminChangePassword").style.visibility = "hidden";
+                closeAdminLogin();
+            }
         </script>
 
         <div id="adminPopUp" class="adminPopUp">
@@ -92,7 +97,7 @@
         <div id="adminChangePassword" class="adminPopUp">
             <div id="adminPopUpContent" class="reveal-modal">
                 <div>
-                    <a class="closeAdminPopUp" onclick="closeAdminLogin()">&times;</a>
+                    <a class="closeAdminPopUp" onclick="closeAdminChangePass()">&times;</a>
                     <h2> Alterar senha </h2>
                 </div>
                 <p>
