@@ -20,7 +20,13 @@ module.exports.createJson = (...message) => {
             return {
                 'message': message[0],
                 'token': message[1]
-            }
+            };
+        case 3:
+            return {
+                'message': message[0],
+                'token': message[1],
+                'status': message[2]
+            };
     }
 };
 
@@ -56,6 +62,25 @@ module.exports.isAdminValid = async(req) => {
         const admin = await AdminModel.findOne().and([
             { token: req.headers.authorization.split(' ')[1] },
             { status: 'Active' }
+        ]);
+        return admin;
+    }
+    return undefined;
+}
+
+/**
+ * Auxiliar async function to verify if admin password change is requested
+ *
+ * @param Admin request req to retrieve Bearer token
+ *
+ * @return current admin if it exists, undefined otherwise
+ */
+module.exports.isAdminPasswordChangeRequested = async(req) => {
+    console.log("[Server] isAdminValid");
+    if(req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+        const admin = await AdminModel.findOne().and([
+            { token: req.headers.authorization.split(' ')[1] },
+            { status: 'FirstLogin' }
         ]);
         return admin;
     }

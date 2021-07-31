@@ -89,6 +89,26 @@
             </div>
         </div>
 
+        <div id="adminChangePassword" class="adminPopUp">
+            <div id="adminPopUpContent" class="reveal-modal">
+                <div>
+                    <a class="closeAdminPopUp" onclick="closeAdminLogin()">&times;</a>
+                    <h2> Alterar senha </h2>
+                </div>
+                <p>
+                    <form>
+                        <label for="fname"> Senha antiga </label><br>
+                        <input type="password" id="fOldPass" name="fOldPass"><br><br>
+                        <label for="lname"> Nova Senha </label><br>
+                        <input type="password" id="fNewPass" name="fNewPass"><br><br>
+                        <label for="lname"> Confirmar Senha </label><br>
+                        <input type="password" id="fConfirmPass" name="fConfirmPass"><br><br>
+                    </form>
+                    <button onclick="performAdminPasswordChange()"> Trocar </button>
+                </p>
+            </div>
+        </div>
+
         <div id="deleteReportDiv" class="deleteReport">
             <h1> Excluir reporte? </h1>
             <h3> Deseja excluir esse reporte? Digite o motivo: </h3>

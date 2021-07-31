@@ -26,7 +26,7 @@ const AdminSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Active'],
+        enum: ['Pending', 'FirstLogin', 'Active'],
         default: 'Pending'
     },
     token: {

@@ -48,9 +48,9 @@ router.post("/login", async (req, res) => {
     try {
         console.log("[Server] Admin Login");
         const admin = await AdminModel.findOne({ email: req.body.email });
-        if(admin && admin.status == 'Active') {
+        if(admin && admin.status != 'Pending') {
             if(admin.password == req.body.password) {
-                return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, admin.token));
+                return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_LOGIN_SUCCESS, admin.token, admin.status));
             }
         }
         return res.status(Constants.HTTP_NOT_FOUNT).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
@@ -58,6 +58,21 @@ router.post("/login", async (req, res) => {
         console.log("[Server] Error admin login: " + err);
         return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
     }
+});
+
+router.post("/changePassword", async (req, res) => {
+    console.log("[Server] Admin change password");
+    const adm = await Utils.isAdminPasswordChangeRequested(req);
+    if (!adm) {
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+    if (adm.password == req.body.oldPass) {
+        adm.password = req.body.newPass;
+        adm.status = 'Active';
+        adm.save();
+        return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
+    }
+    return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
 });
 
 //TODO move to blocked array and user black list

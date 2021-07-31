@@ -506,7 +506,40 @@ async function performAdminLogin() {
         if(response.status == 200) {
             const res = await response.json();
             adminToken = res.token;
-            applyAdminInterface();
+
+            if (res.status == 'FirstLogin') {
+                (await document.getElementById('adminChangePassword')).style.visibility = 'visible';
+                (await document.getElementById('lname')).value = '';
+            } else {
+                applyAdminInterface();
+            }
+        }
+    }
+}
+
+async function performAdminPasswordChange() {
+    const oldPass = await document.getElementById('fOldPass').value;
+    const newPass = await document.getElementById('fNewPass').value;
+    const confirm = await document.getElementById('fConfirmPass').value;
+
+    if (newPass == confirm) {
+        let url = '/admin/changePassword';
+        let h = new Headers();
+        h.append('Content-type', 'application/json');
+        h.append('authorization', 'Bearer ' + adminToken);
+
+        let json = { oldPass: oldPass, newPass: newPass };
+        let req = new Request(url, {
+            headers: h,
+            body: JSON.stringify(json),
+            method: 'POST'
+        });
+        const res = await fetch(req);
+
+        if (res.ok) {
+            if (res.status == 200) {
+                (await document.getElementById('adminChangePassword')).style.visibility = 'hidden';
+            }
         }
     }
 }
