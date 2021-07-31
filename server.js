@@ -39,6 +39,11 @@ app.get("/confirm/:confirmationCode", emailAuth.verifyEmail);
 const reportPost = require('./routes/reportPost');
 app.use('/report', reportPost);
 
+//The 404 Route (ALWAYS Keep this as the last route)
+app.get('*', (req, res) => {
+    res.render(fetchFile('/www/pageNotFound.html'))
+});
+
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
