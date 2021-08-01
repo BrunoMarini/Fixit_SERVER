@@ -567,6 +567,7 @@ function applyAdminInterface() {
     elem.onclick = function() { window.open("/adminControlPanel.html"); };
     side.appendChild(elem);
     closeAdminLogin();
+    document.getElementById('openAdminLogin').style.visibility = "hidden";
 }
 
 function openImageControl(id) {
