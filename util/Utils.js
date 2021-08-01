@@ -104,15 +104,31 @@ module.exports.isBlocked = async(email, phone) => {
 }
 
 /**
- * Auxiliar function to verify if current email or password are registered
+ * Auxiliar function to verify if user current email or phone are registered
  *
  * @param {NullAble} email to verify
  * @param {NullAble} phone to verify
  *
  * @returns true if email or phone are registered, false otherwise
  */
-module.exports.isRegistered = async(email, phone) => {
+module.exports.isUserRegistered = async(email, phone) => {
     const exist = await UserModel.findOne().or([
+        { email: email },
+        { phone: phone }
+    ]);
+    return (exist ? true : false);
+}
+
+/**
+ * Auxiliar function to verify if admin current email or phone are registered
+ *
+ * @param {NullAble} email to verify
+ * @param {NullAble} phone to verify
+ *
+ * @returns true if email or phone are registered, false otherwise
+ */
+ module.exports.isAdminRegistered = async(email, phone) => {
+    const exist = await AdminModel.findOne().or([
         { email: email },
         { phone: phone }
     ]);

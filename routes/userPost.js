@@ -18,7 +18,7 @@ router.post("/register", async (req, res) => {
         }
 
         // Check if user already exist in DB
-        if(await Utils.isRegistered(req.body.email, req.body.phone)) {
+        if(await Utils.isUserRegistered(req.body.email, req.body.phone)) {
             console.log("[Server] User alredy registered");
             return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
         } else {
@@ -97,7 +97,7 @@ router.post("/updateRegister", async (req, res) => {
 
     let changed = false;
     if (req.body.phone != undefined && req.body.phone != user.phone) {
-        if (await Utils.isRegistered(undefined, req.body.phone)) {
+        if (await Utils.isUserRegistered(undefined, req.body.phone)) {
             return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_PHONE_REGISTERED));
         }
         changed = true;

@@ -161,7 +161,7 @@ body {
 
 #address {
     position: absolute;
-    bottom: 5px;
+    bottom: 10px;
     left: 50%;
     margin-left: -180px;
     width: 350px;

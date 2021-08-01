@@ -20,6 +20,12 @@ router.post("/register", async (req, res) => {
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
+    // Check if user already exist in DB
+    if(await Utils.isAdminRegistered(req.body.email, req.body.phone)) {
+        console.log("[Server] Admin alredy registered");
+        return res.status(Constants.HTTP_CONFLICT).json(Utils.createJson(Constants.MESSAGE_REGISTER_CONFLICT));
+    }
+
     const userData = req.body;
     if (userData.institution == undefined || userData.sector == undefined || userData.email == undefined
             || userData.phone == undefined || userData.desc == undefined) {
