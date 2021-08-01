@@ -158,3 +158,22 @@ body {
     transform: translate(-50%, -50%);
     visibility: hidden;
 }
+
+#address {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    margin-left: -180px;
+    width: 350px;
+    z-index: 5;
+    background-color: #ffff;
+    padding: 5px;
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0.3) 0px 1px 4px -1px;
+    visibility: hidden;
+}
+
+#address-text {
+    font-family: 'Roboto', 'Arial', 'sans-serif';
+    margin: 5px;
+}

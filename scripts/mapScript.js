@@ -1,4 +1,4 @@
-let map, heatMap, cluster;
+let map, heatMap, cluster, geocoder;
 let pointInfo;
 let points, resolvedPoints;
 let idToBeDeleted = undefined;
@@ -62,6 +62,8 @@ function loadFunc(token, env) {
                     data: getHeatMapData(),
                     map: null
                 });
+
+                geocoder = new google.maps.Geocoder();
 
                 addPanToCurrentLocationButton();
                 loadMarkers(false);
@@ -135,7 +137,6 @@ function loadMarkers(isResolved) {
     }
     for(i = 0; i < values.length; i++) {
         const latLng = new google.maps.LatLng(values[i].lat, values[i].long);
-
         const markerUrl = chooseMarkerColor(values[i].type);
         const marker = new google.maps.Marker({
             position: latLng,
@@ -168,6 +169,7 @@ function loadMarkers(isResolved) {
                 closeAllInfoWindows();
                 infoWindow.open(marker.get('map'), marker);
                 loadSideBarInfo(marker.get("id"));
+                loadAddressInfo(marker);
             });
         }
 
@@ -229,6 +231,7 @@ function sideBarVisible(visible) {
         map.setZoom(15);
         sideBar.style.visibility = "hidden";
         closeAllInfoWindows();
+        closeAddress();
     }
 }
 
@@ -237,6 +240,7 @@ function clearScreen() {
     sideBar.style.visibility = "hidden";
     closeAllInfoWindows();
     clearCurrentSideBar();
+    closeAddress();
 }
 
 function clearCurrentSideBar() {
@@ -642,6 +646,7 @@ function prepareToRefreshMarkers() {
 function refreshMarkers() {
     sideBarVisible(false);
     clearCurrentSideBar();
+    closeAddress();
     setMapOnAll(null);
     markers = [];
     loadMarkers(false);
@@ -702,3 +707,35 @@ function closeZoom(visible) {
     zoomDiv.style.visibility = 'hidden';
     sideBarVisible(visible);
 }
+
+function loadAddressInfo(marker) {
+    geocodeLatLng(marker.getPosition().lat(), marker.getPosition().lng(), true);
+}
+
+function closeAddress() {
+    document.getElementById('address-text').innerHTML = "";
+    document.getElementById('address').style.visibility = "hidden";
+}
+
+function geocodeLatLng(lat, lng, isShowInfo) {
+    const latlng = {
+      lat: lat,
+      lng: lng,
+    };
+
+    geocoder
+      .geocode({ location: latlng })
+      .then((response) => {
+        if (response.results[0]) {
+            if (isShowInfo) {
+                document.getElementById('address-text').innerHTML = response.results[0].formatted_address;
+                document.getElementById('address').style.visibility = "visible";
+            } else {
+                console.log(response.results[0].formatted_address);
+            }
+        } else {
+          window.alert("No results found");
+        }
+      })
+      .catch((e) => window.alert("Geocoder failed due to: " + e));
+  }
