@@ -47,7 +47,8 @@ function loadFunc(token, env) {
                 points = response;
 
                 map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: -22.902612666166245, lng: -47.07165189321403 },
+                    // Defining Brasilia as map center if the browser does not support geolocation
+                    center: { lat: -15.79936757290689, lng: -47.861774584170796 },
                     zoom: 8,
                     mapTypeControl: true,
                     styles: mapStyleClear,
@@ -69,6 +70,16 @@ function loadFunc(token, env) {
                     ignoreHidden: true,
                     imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"
                 });
+
+                // If browser supports geolocation the map will start centered in user current position
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                      user_location = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                      map.setCenter(user_location);
+                    });
+                } else {
+                    console.log("Error! Browser does not support geolocation");
+                }
             }
         }
     };
