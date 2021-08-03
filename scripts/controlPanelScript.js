@@ -1,4 +1,5 @@
 let reportNumbers;
+let currentDisplay = "text";
 
 function loadInfo() {
     // Load the Visualization API and the corechart package.
@@ -34,7 +35,7 @@ function drawPieChart() {
     const rows = [];
     for(let i = 0; i < reportNumbers.length; i++) {
         const temp = [];
-        temp.push(reportNumbers[i].type);
+        temp.push(translateType(reportNumbers[i].type));
         temp.push(reportNumbers[i].length);
         rows.push(temp);
     }
@@ -52,7 +53,7 @@ function drawPieChart() {
     var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
                   //google.visualization.BarChart
     chart.draw(data, options);
-    showDiv('chart_div');
+    showDiv();
 }
 
 function drawLineChart() {
@@ -80,7 +81,7 @@ function drawLineChart() {
             var data = new google.visualization.DataTable();
             data.addColumn('date', 'Dia');
             for(let i = 0; i < reportData[0].reports.length; i++) {
-                data.addColumn('number', reportData[0].reports[i].type);
+                data.addColumn('number', translateType(reportData[0].reports[i].type));
             }
 
             const rows = [];
@@ -96,7 +97,7 @@ function drawLineChart() {
 
             var options = {
                 title: 'Reportes ao longo do tempo',
-                curveType: 'function',
+                //curveType: 'function',
                 'width': 'auto',
                 'height': 500,
                 'text-align': 'center',
@@ -105,16 +106,27 @@ function drawLineChart() {
 
             var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(data, options);
-            showDiv('chart_div');
+            showDiv();
         }
     }
 }
 
-function showDiv(id) {
-    document.getElementById(id).style.visibility = 'visible';
+function showDiv() {
+    document.getElementById('chart_div').style.visibility = 'visible';
 }
 
 function hideAll() {
-    document.getElementById('default_text').style.visibility = 'hidden';
+    document.getElementById('chart_div').innerHTML = "";
     document.getElementById('chart_div').style.visibility = 'hidden';
+}
+
+function translateType(type) {
+    switch (type) {
+        case 'Depredation': return 'Depredação';
+        case 'Road':        return 'Problema na via';
+        case 'Leak':        return 'Vazamento';
+        case 'Garbage':     return 'Depósito de lixo';
+        case 'Flood':       return 'Alagamento';
+        case 'Multiple':    return 'Multiplos Tipos';
+    }
 }
