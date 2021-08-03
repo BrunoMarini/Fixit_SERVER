@@ -103,6 +103,31 @@ body {
     font-weight: 500;
 }
 
+#locationButton {
+    background: none padding-box rgb(255, 255, 255);
+    display: table-cell;
+    border: 0px;
+    margin: 0px;
+    padding: 0px 17px;
+    text-transform: none;
+    appearance: none;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    direction: ltr;
+    overflow: hidden;
+    margin-top: 10px;
+    text-align: center;
+    height: 30px;
+    vertical-align: middle;
+    color: rgb(0, 0, 0);
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 18px;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+    box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+}
+
 /* Left Menu END */
 /* Login PopUp */
 .closeAdminPopUp {
