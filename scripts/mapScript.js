@@ -529,6 +529,8 @@ async function performAdminLogin() {
                 applyAdminInterface();
             }
         }
+    } else {
+        window.alert("Erro ao realizar o login!\nPor favor verifique seus dados e tente novamente!");
     }
 }
 
@@ -555,6 +557,8 @@ async function performAdminPasswordChange() {
             if (res.status == 200) {
                 (await document.getElementById('adminChangePassword')).style.visibility = 'hidden';
             }
+        } else {
+            window.alert("Erro ao trocar a senha!\nVerifique seus dados e tente novamente!\nAh e a senha nova deve conter mais que 3 caracteres");
         }
     }
 }

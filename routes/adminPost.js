@@ -72,13 +72,14 @@ router.post("/changePassword", async (req, res) => {
     if (!adm) {
         return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
-    if (adm.password == req.body.oldPass) {
+    if (adm.password == req.body.oldPass && req.body.newPass.length > 3) {
         adm.password = req.body.newPass;
         adm.status = 'Active';
         adm.save();
         return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
+    } else {
+        return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHENTICATED));
     }
-    return res.status(Constants.HTTP_INTERNAL_SERVER_ERROR).json(Utils.createJson(Constants.MESSAGE_INTERNAL_ERROR));
 });
 
 //TODO move to blocked array and user black list
