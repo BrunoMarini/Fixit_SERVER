@@ -676,8 +676,10 @@ function openImageZoom(id) {
     var img = document.createElement("img");
     img.id = 'zoomImg';
     img.src = "data:image/jpg;base64, " + report.image;
-    img.style.width = 'auto';
-    img.style.height = 'auto';
+    img.style.width = "500px";
+    img.style.height = "500px";
+    img.style.border = "3px solid black";
+    img.style.objectFit = "contain";
 
     //Append user description to div
     var desc = document.createElement('p');
