@@ -128,6 +128,29 @@ body {
     box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
 }
 
+#btnResolve {
+    display: table-cell;
+    border: 0px;
+    margin: 0px;
+    padding: 0px 17px;
+    text-transform: none;
+    appearance: none;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    direction: ltr;
+    overflow: hidden;
+    margin-top: 10px;
+    text-align: center;
+    height: 30px;
+    width: 100%;
+    color: rgb(0, 0, 0);
+    font-family: Roboto, Arial, sans-serif;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
+    box-shadow: rgb(0 0 0 / 70%) 0px 1px 4px -1px;
+}
+
 /* Left Menu END */
 /* Login PopUp */
 .closeAdminPopUp {
@@ -169,6 +192,13 @@ body {
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     visibility: hidden;
+    font-family: Roboto, Arial, sans-serif;
+}
+
+#deleteText {
+    font-size: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .zoomReport {

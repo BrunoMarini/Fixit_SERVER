@@ -67,6 +67,7 @@
 
             function openAdminLogin() {
                 closeNav();
+                clearScreen();
                 document.getElementById("adminPopUp").style.visibility = "visible";
             }
 
@@ -122,7 +123,7 @@
         </div>
 
         <div id="deleteReportDiv" class="deleteReport">
-            <h1> Excluir reporte? </h1>
+            <h1> Excluir reporte </h1>
             <h3> Deseja excluir esse reporte? Digite o motivo: </h3>
             <div id="imgToBeDeleted"></div>
             <div id="textToBeDeleted"></div>
@@ -135,8 +136,8 @@
                 <input type="checkbox" id="cbBlockUser" name="cbBlockUser" value="0">
             </form>
             <br>
-            <button id="btnCancel" onclick="closeDeleteReport()"> Cancelar </button>
-            <button id="btnDelete" onclick="deleteReport()"> Deltar report </button>
+            <button id="btnResolve" onclick="closeDeleteReport()"> Cancelar </button>
+            <button id="btnResolve" onclick="deleteReport()"> Deltar report </button>
         </div>
 
         <div id="imageZoomDiv" class="zoomReport">

@@ -162,6 +162,7 @@ function loadMarkers(isResolved) {
                 map.setZoom(20);
                 map.setCenter(marker.getPosition());
                 closeAllInfoWindows();
+                closeAddress();
                 infoWindow.open(marker.get('map'), marker);
             });
         } else {
@@ -171,6 +172,7 @@ function loadMarkers(isResolved) {
                 map.setZoom(20);
                 map.setCenter(marker.getPosition());
                 closeAllInfoWindows();
+                closeAddress();
                 infoWindow.open(marker.get('map'), marker);
                 loadSideBarInfo(marker.get("id"));
                 loadAddressInfo(marker);
@@ -261,16 +263,13 @@ async function loadSideBarInfo(id) {
     //Add resolve location button if admin
     if(adminToken != undefined && adminToken.length > 0) {
         const btnResolve = document.createElement("button");
-        btnResolve.innerHTML = "Resolver Localização";
-        btnResolve.style.position = "absolute";
-        btnResolve.style.width = "100%";
-        btnResolve.style.right = "0";
-        btnResolve.style.height = "40px";
-        btnResolve.style.borderRadius = "10px";
+
+        // Style
+        btnResolve.id = "btnResolve";
+        btnResolve.innerHTML = "Marcar posição como resolvida";//Resolver Localização";
         btnResolve.onclick = function() { resolveLocation(id); };
-        const head = document.getElementById("header");
-        head.appendChild(btnResolve);
-        head.style.marginBottom = "60px";
+
+        document.getElementById('address').appendChild(btnResolve);
     }
 
     let url = '/map/getPoint';
@@ -688,7 +687,7 @@ function openImageZoom(id) {
     desc.innerHTML = 'Descrição: ' + report.description;
 
     var btnClose = document.createElement('button');
-    btnClose.id = 'zoomBtnClose';
+    btnClose.id = 'btnResolve';
     btnClose.innerHTML = "Fechar";
     btnClose.onclick = function() { closeZoom(true); };
 
@@ -699,7 +698,7 @@ function openImageZoom(id) {
     //Id admin append delete button
     if(adminToken != undefined && adminToken.length > 0) {
         var deleteThisBtn = document.createElement('button');
-        deleteThisBtn.id = 'zoomBtnDelete';
+        deleteThisBtn.id = 'btnResolve';
         deleteThisBtn.innerHTML = 'Deletar esse reporte';
         deleteThisBtn.onclick = function() {
             closeZoom(false);
@@ -725,7 +724,12 @@ function loadAddressInfo(marker) {
 
 function closeAddress() {
     document.getElementById('address-text').innerHTML = "";
-    document.getElementById('address').style.visibility = "hidden";
+
+    const address = document.getElementById("address");
+    if (address.childElementCount > 1) {
+        address.removeChild(address.lastChild);
+    }
+    address.style.visibility = "hidden";
 }
 
 function geocodeLatLng(lat, lng, isShowInfo) {
