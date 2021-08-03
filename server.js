@@ -1,18 +1,26 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 /* Initial setup */
 require('dotenv/config');
+
 process.env.TZ = 'America/Sao_Paulo';
-app.use(express.json());
-app.use(express.urlencoded());
+
+//app.use(express.json());
+//app.use(express.urlencoded());
+
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }))
 
 /* Set image folder public */
 app.use(express.static('www'));
 app.use(express.static('public'));
 app.use(express.static('scripts'));
-//app.all('/img/mapbox-icon.png', (req, res) => { res.sendFile(fetchFile("/public/img/mapbox-icon.png")); });
+
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
 
 /* HTML requests */
 app.get('/', (req, res) => { 

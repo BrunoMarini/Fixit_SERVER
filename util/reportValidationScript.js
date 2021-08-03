@@ -5,6 +5,9 @@ const Piii = require("piii");
 const piiiFilters = require("piii-filters");
 const Utils = require('./Utils');
 const path = require('path');
+const spawn = require("child_process").spawn;
+let {PythonShell} = require('python-shell');
+const PythonAux = require('./PythonAux');
 
 /**
  * Auxiliar function to check if reported images contains
@@ -94,4 +97,31 @@ module.exports.filterOfensiveImage = async (img) => {
         }
     });
     return piii.filter(message);
+}
+
+module.exports.removeFaces = async (img) => {
+    console.log("[Server] Removing faces");
+
+    const fileName = await Crypto.randomBytes(12).toString('hex') + '.jpeg';
+    const filePath = path.join(__dirname + '/../public/temp/' + fileName);
+
+    fs.writeFileSync(filePath, img, { encoding: 'base64' }, function(err) {
+        if (err) {
+            console.log("[Server] Error converting file");
+            return -1;
+        }
+    });
+
+    const scriptPath = path.join(__dirname + "/../scripts/python/");
+    const modelPath = path.join(__dirname + "/../scripts/python/preTrainedModel/haarcascade_frontalface_default.xml")
+
+    const options = PythonAux.generatePythonOptions(scriptPath, filePath, modelPath);
+    const res = await PythonAux.runPython('faceBlur.py', options);
+
+    console.log("[Server] Python algorithm executed " + (res ? "Successfully" : "With errors"));
+    const newBitmap = fs.readFileSync(filePath, 'base64');
+
+    fs.unlinkSync(filePath);
+
+    return newBitmap;
 }

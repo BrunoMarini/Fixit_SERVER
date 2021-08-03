@@ -16,12 +16,17 @@ router.post("/new", async (req, res) => {
         return res.status(Constants.HTTP_UNAUTHORIZED).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
     }
 
-    const base64image = req.body.image;
+    let base64image = req.body.image;
     const imgResult = await ReportValidation.filterOfensiveImage(base64image);
     if (imgResult.isNude) {
         const strikes = await Utils.updateUserStrikes(user);
         const message = (strikes == Constants.MAXIMUM_STRIKE_LIMIT ? "BLOQUEADO" : Constants.MESSAGE_UNAPPROPRIATED_REPORT + " " + strikes + "/" + Constants.MAXIMUM_STRIKE_LIMIT);
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(message));
+    }
+
+    const imageResult = await ReportValidation.removeFaces(base64image);
+    if (imageResult) {
+        base64image = imageResult;
     }
 
     const coordinates = req.body.coordinates;
