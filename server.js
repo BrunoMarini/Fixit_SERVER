@@ -8,19 +8,19 @@ require('dotenv/config');
 
 process.env.TZ = 'America/Sao_Paulo';
 
-//app.use(express.json());
 //app.use(express.urlencoded());
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }))
+app.use(express.json());
 
 /* Set image folder public */
 app.use(express.static('www'));
 app.use(express.static('public'));
 app.use(express.static('scripts'));
 
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb'}));
+//app.use(express.json({limit: '50mb'}));
+//app.use(express.urlencoded({limit: '50mb'}));
 
 /* HTML requests */
 app.get('/', (req, res) => { 
