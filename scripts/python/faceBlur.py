@@ -1,20 +1,19 @@
 # Importing libraries
 import sys
-import numpy as np
 import cv2 as cv
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
-print("\n[Python] Starting face blur")
+print("\n[Python] Starting face blur cv2 version: " + cv.__version__)
 
 image_path = sys.argv[1]
 model_path = sys.argv[2]
 
 # A function for plotting the images
-def plotImages(img):
-    plt.imshow(img, cmap="gray")
-    plt.axis('off')
-    plt.style.use('seaborn')
-    plt.show()
+#def plotImages(img):
+#    plt.imshow(img, cmap="gray")
+#    plt.axis('off')
+#    plt.style.use('seaborn')
+#    plt.show()
   
 #load image
 image = cv.imread(image_path)
