@@ -178,7 +178,7 @@ async function savePositionResolved(pos) {
         resolved.reports += pos.reports.length;
         resolved.save();
     } else {
-        console.log("New resolved position");
+        console.log("[Sever] New resolved position");
         const res = new ResolvedPositionModel({
             type: pos.type,
             location: pos.location,

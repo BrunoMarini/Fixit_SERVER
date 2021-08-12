@@ -7,6 +7,8 @@ let resolvedMarkers = [];
 let infoWindows = [];
 let adminToken = undefined;
 let showResolved = false;
+let isShowSelectedOnly = 0;
+let defaultMapCenter = { lat: -15.79936757290689, lng: -47.861774584170796 };
 let mapStyleClear =
 [{
     "featureType": "poi",
@@ -48,7 +50,7 @@ function loadFunc(token, env) {
 
                 map = new google.maps.Map(document.getElementById('map'), {
                     // Defining Brasilia as map center if the browser does not support geolocation
-                    center: { lat: -15.79936757290689, lng: -47.861774584170796 },
+                    center: defaultMapCenter,
                     zoom: 8,
                     mapTypeControl: true,
                     styles: mapStyleClear,
@@ -224,7 +226,7 @@ function chooseMarkerColor(type) {
         case 'Leak':        dot = 'pink';   break;
         case 'Garbage':     dot = 'yellow'; break;
         case 'Flood':       dot = 'purple'; break;
-        default: return  './img/multipleIcon.png';
+        default: return  './img/marker/multipleIcon.png';
     }
     return ('http://maps.google.com/mapfiles/ms/icons/' + dot + '-dot.png');
 }
@@ -358,37 +360,44 @@ function mouseOut(id) {
 }
 
 function toggleHeatMap() {
+    disableAllSelectedTypes();
     if(heatMap.getMap()) {
         heatMap.setMap(null);
         setMapOnAll(map);
         showHeatMapOptions(false);
+        unblockButton("filterShowResolved");
+        unblockButton("filterShowAll");
+        unblockTypeButton();
+        refreshMap();
     } else {
         heatMap.setMap(map);
         setMapOnAll(null);
+        setMapOnAllResolved(null);
         showHeatMapOptions(true);
+        blockButton("filterShowResolved");
+        blockButton("filterShowAll");
+        blockTypeButton();
     }
 }
 
 function showHeatMapOptions(value) {
-    var d = document.getElementById("heatMapDiv");
-
-    if(value) {
-        var radius = createSubElement("heatMapRadius", "Alterar o raio", changeRadius);
-        var opacity = createSubElement("heatMapOpacity", "Alterar Opacidade", changeOpacity);
-        d.appendChild(radius);
-        d.appendChild(opacity);
+    var hmButton = document.getElementById("filterHeatMap");
+    if (value) {
+        showHeatMapSliders();
+        hmButton.style.backgroundImage = "url('../img/icons/disabledHeatMapIcon.png')";
     } else {
-        d.removeChild(document.getElementById("heatMapRadius"));
-        d.removeChild(document.getElementById("heatMapOpacity"));
+        hideHeatMapSliders();
+        hmButton.style.backgroundImage = "url('../img/icons/heatMapIcon.png')";
     }
 }
 
-function changeRadius() {
-    heatMap.set("radius", heatMap.get("radius") ? null : 20);
+function changeRadius(value) {
+    heatMap.set("radius", value);
 }
 
-function changeOpacity() {
-    heatMap.set("opacity", heatMap.get("opacity") ? null : 0.2);
+function changeOpacity(value) {
+    value = value / 10;
+    heatMap.set("opacity", value);
 }
 
 function setMapOnAll(map) {
@@ -422,42 +431,31 @@ function getHeatMapData() {
 }
 
 function toggleCluster() {
-    cluster.setMap(cluster.getMap() ? null : map);
-}
-
-function toggleOneTypeOnly() {
-    var d = document.getElementById("oneTypeDiv");
-    var elem = [];
-    if(d.childElementCount > 1) {
-        setMapOnAll(map);
-        elem.push(document.getElementById("typeDepredation"));
-        elem.push(document.getElementById("typeRoad"));
-        elem.push(document.getElementById("typeLeak"));
-        elem.push(document.getElementById("typeGarbage"));
-        elem.push(document.getElementById("typeFlood"));
-
-        for(var i = 0; i < elem.length; i++)
-            d.removeChild(elem[i]);
+    var btnCluster = document.getElementById("filterShowAll");
+    if (cluster.getMap()) {
+        blockTypeButton();
+        cluster.setMap(null);
+        btnCluster.style.backgroundImage = "url('../img/icons/disabledEyeIcon.png')";
     } else {
-        setMapOnAll(null);
-        elem.push(createSubElement("typeDepredation", translateType('Depredation'), function() { showSelectedType('Depredation') }));
-        elem.push(createSubElement("typeRoad", translateType('Road'), function() { showSelectedType('Road') }));
-        elem.push(createSubElement("typeLeak", translateType('Leak'), function() { showSelectedType('Leak') }));
-        elem.push(createSubElement("typeGarbage", translateType('Garbage'), function() { showSelectedType('Garbage') }));
-        elem.push(createSubElement("typeFlood", translateType('Flood'), function() { showSelectedType('Flood') }));
-
-        for(var i = 0; i < elem.length; i++)
-            d.appendChild(elem[i]);
+        unblockTypeButton();
+        cluster.setMap(map);
+        btnCluster.style.backgroundImage = "url('../img/icons/eyeIcon.png')";
     }
 }
 
 function toggleShowResolved() {
+    var btnResolved = document.getElementById("filterShowResolved");
     showResolved = !showResolved;
+    disableAllSelectedTypes();
     clearScreen();
     if(showResolved) {
         if(resolvedMarkers && resolvedMarkers.length > 0) {
             setMapOnAll(null);
             setMapOnAllResolved(map);
+            blockButton("filterHeatMap");
+            blockButton("filterShowAll");
+            btnResolved.innerHTML = "Não resolvidos"
+            btnResolved.style.background = "url('../img/icons/disabledSolvedIcon.png')";
         } else {
             var req = new XMLHttpRequest();
             req.open('GET', '/map/getResolved/', true);
@@ -469,6 +467,10 @@ function toggleShowResolved() {
                     resolvedPoints = response;
                     setMapOnAll(null);
                     loadMarkers(true);
+                    blockButton("filterHeatMap");
+                    blockButton("filterShowAll");
+                    btnResolved.innerHTML = "Não resolvidos"
+                    btnResolved.style.background = "url('../img/icons/disabledSolvedIcon.png')";
                 }
             }
             req.send();
@@ -476,32 +478,74 @@ function toggleShowResolved() {
     } else {
         setMapOnAll(map);
         setMapOnAllResolved(null);
+        unblockButton("filterHeatMap");
+        unblockButton("filterShowAll")
+        btnResolved.innerHTML = "Resolvidos"
+        btnResolved.style.background = "url('../img/icons/solvedIcon.png')";
     }
+    refreshMap();
 }
 
 function showSelectedType(type) {
-    for(let i = 0; i < markers.length; i++) {
-        if(markers[i].id.split("@")[0] == type) {
-            var ele = document.getElementById('type'+type);
-            if(markers[i].getMap()) {
-                markers[i].setMap(null);
-                ele.style.color = 'black';
+    var ele = document.getElementById('type'+type);
+    if (ele.className.split(" ")[1] == "btn"+type) {
+        ele.className = "btnMenu btn"+type+"Pressed";
+        isShowSelectedOnly++;
+        if (isShowSelectedOnly == 1) {
+            if (showResolved) {
+                setMapOnAllResolved(null);
             } else {
-                markers[i].setMap(map);
-                ele.style.color = 'red';
+                setMapOnAll(null);
+            }
+        }
+    } else {
+        ele.className = "btnMenu btn"+type;
+        isShowSelectedOnly--;
+        if (isShowSelectedOnly == 0) {
+            if (showResolved) {
+                setMapOnAllResolved(map);
+            } else {
+                setMapOnAll(map);
+            }
+            refreshMap();
+        }
+    }
+
+    var m;
+    if (showResolved) {
+        m = resolvedMarkers;
+    } else {
+        m = markers;
+    }
+
+    for(let i = 0; i < m.length; i++) {
+        if(m[i].id.split("@")[0] == type) {
+            if(m[i].getMap()) {
+                m[i].setMap(null);
+            } else {
+                m[i].setMap(map);
             }
         }
     }
 }
 
-function createSubElement(id, text, func) {
-    const elem = document.createElement("a");
-    elem.id = id;
-    elem.innerHTML = text;
-    elem.style.padding = '8px 8px 8px 50px';
-    elem.style.fontSize = '20px';
-    elem.onclick = func;
-    return elem;
+function disableAllSelectedTypes() {
+    const type = ["Depredation", "Road", "Leak", "Garbage", "Flood"];
+    type.forEach(function (t) {
+        var button = document.getElementById("type"+t);
+        button.className = "btnMenu btn"+t;
+    });
+    isShowSelectedOnly = 0;
+    setMapOnAll(map);
+}
+
+function refreshMap() {
+    map.setCenter(defaultMapCenter);
+    if (map.getZoom() == 5) {
+        map.setZoom(4);
+    } else {
+        map.setZoom(5);
+    }
 }
 
 async function performAdminLogin() {
@@ -564,17 +608,6 @@ async function performAdminPasswordChange() {
             window.alert("Erro ao trocar a senha!\nVerifique seus dados e tente novamente!\nAh e a senha nova deve conter mais que 3 caracteres");
         }
     }
-}
-
-function applyAdminInterface() {
-    const side = document.getElementById("menuOpt");
-    var elem = document.createElement('a');
-    elem.id = "adminControlPanel";
-    elem.innerHTML = 'Painel de Controle';
-    elem.onclick = function() { window.open("/adminControlPanel.html"); };
-    side.appendChild(elem);
-    closeAdminLogin();
-    document.getElementById('openAdminLogin').style.visibility = "hidden";
 }
 
 function openImageControl(id) {
@@ -753,4 +786,4 @@ function geocodeLatLng(lat, lng, isShowInfo) {
         }
       })
       .catch((e) => window.alert("Geocoder failed due to: " + e));
-  }
+}

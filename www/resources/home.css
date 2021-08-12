@@ -45,64 +45,6 @@ body {
     overflow: auto;
 }
 
-/* Left Menu START */
-
-.sidenav {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #ffff;
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
-}
-
-.sidenav a {
-    padding: 8px 8px 8px 32px;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 25px;
-    color: #000000;
-    display: block;
-    transition: 0.3s;
-}
-
-.sidenav a:hover {
-    color: rgb(0, 145, 255);
-}
-
-.sidenav .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 50px;
-    margin-left: 50px;
-}
-
-@media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
-}
-
-#hamburguerMenu {
-    position: fixed;
-    font-size:30px;
-    cursor: pointer;
-    z-index: 3000;
-    background: #ffff;
-    padding: 10px;
-    margin: 10px;
-    font-family: 'Roboto', 'Arial', 'sans-serif';
-    font-size: 18px;
-    border-radius: 2px;
-    box-shadow: rgba(0, 0, 0.3) 0px 1px 4px -1px;
-    min-width: 35px;
-    font-weight: 500;
-}
-
 #locationButton {
     background: none padding-box rgb(255, 255, 255);
     display: table-cell;
@@ -231,4 +173,122 @@ body {
 #address-text {
     font-family: 'Roboto', 'Arial', 'sans-serif';
     margin: 5px;
+}
+
+/* New side Nav */
+.backgroundSideNav {
+    z-index: 99999;
+    position: absolute;
+}
+
+.sideNav {
+    background-color: white;
+    margin: 10px;
+    padding-top: 1px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0.3) 0px 1px 2px -1px;
+}
+
+.sideText {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 18px;
+    font-weight: 500;
+    font-family: 'Roboto', 'Arial', 'sans-serif';
+}
+
+.btnMenu {
+    width: 50px;
+    height: 50px;
+    cursor: pointer; /* Pointer/hand icon */
+    border: none;
+    background: none;
+    background-size: cover;
+    padding-top: 50px;
+    text-align: center;
+    font-size: 10px;
+    border-radius: 50%;
+}
+
+.btnMenu:hover {
+    filter: brightness(60%);
+}
+
+.btnDepredation { background: url('http://maps.google.com/mapfiles/ms/icons/blue-dot.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnDepredationPressed { background: url('http://maps.google.com/mapfiles/ms/icons/blue-dot.png') no-repeat, #80ffa2; background-position: 50%, 50%; }
+.btnRoad { background: url('http://maps.google.com/mapfiles/ms/icons/green-dot.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnRoadPressed { background: url('http://maps.google.com/mapfiles/ms/icons/green-dot.png') no-repeat, #80ffa2; background-position: 50%, 50%; }
+.btnLeak { background: url('http://maps.google.com/mapfiles/ms/icons/pink-dot.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnLeakPressed { background: url('http://maps.google.com/mapfiles/ms/icons/pink-dot.png') no-repeat, #80ffa2; background-position: 50%, 50%; }
+.btnGarbage { background: url('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnGarbagePressed { background: url('http://maps.google.com/mapfiles/ms/icons/yellow-dot.png') no-repeat, #80ffa2; background-position: 50%, 50%; }
+.btnFlood { background: url('http://maps.google.com/mapfiles/ms/icons/purple-dot.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnFloodPressed { background: url('http://maps.google.com/mapfiles/ms/icons/purple-dot.png') no-repeat, #80ffa2; background-position: 50%, 50%; }
+
+.btnHeatMap { background: url('../img/icons/heatMapIcon.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnSolved { background: url('../img/icons/solvedIcon.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnShowAll { background: url('../img/icons/eyeIcon.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+.btnControlPanel { background: url('../img/icons/controlPanelIcon.png') no-repeat, #e8f1ff; background-position: 50%, 50%; }
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+.configDiv {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 3000;
+}
+
+.configButton {
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+    background: url('../img/icons/engineIcon.png') no-repeat, #ffff;
+    background-position: 50%, 50%;
+    border: none;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0.3) 0px 1px 2px -1px;
+}
+
+.configButton:hover {
+    filter: brightness(60%);
+}
+
+.adminArea {
+    visibility: hidden;
 }

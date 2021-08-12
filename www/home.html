@@ -6,31 +6,46 @@
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script><script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
         <script src='/mapScript.js'></script>
+        <script src='/mapUiScript.js'></script>
         <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
         <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Google+Sans:400,500,700|Google+Sans+Text:400">
         <link href='/resources/home.css' rel="stylesheet">
     </head>
     <body>
-
-        <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <div id="menuOpt" style="height: 100%;">
-                <div id="heatMapDiv">
-                    <a onclick="toggleHeatMap()"> Aplicar HeatMap </a>
+        <div id="newMenu" class="backgroundSideNav">
+            <!-- This menu options div must be used to implement new menus and controls
+                (e.g. heatMapControls), it SHOULD NOT be implemented in the parent div-->
+            <div id="menuOptions">
+                <div class="sideNav">
+                    <h1 class="sideText"> Mostrar apenas um tipo
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <!-- If you want to make this menu closeable uncomment this code snippet
+                        <a href="javascript:void(0)" class="closebtn" onclick="closeNewMenu()">&times;</a
+                        -->
+                    </h1>
+                    <button id="typeDepredation" onclick="showSelectedType('Depredation')" class="btnMenu btnDepredation"> Depredação </button>
+                    <button id="typeRoad" onclick="showSelectedType('Road')" class="btnMenu btnRoad"> Via </button>
+                    <button id="typeLeak" onclick="showSelectedType('Leak')" class="btnMenu btnLeak"> Vazamento </button>
+                    <button id="typeGarbage" onclick="showSelectedType('Garbage')" class="btnMenu btnGarbage"> Lixo </button>
+                    <button id="typeFlood" onclick="showSelectedType('Flood')" class="btnMenu btnFlood"> Inundação </button>
                 </div>
-                <a onclick="toggleCluster()"> Mostrar todos </a>
-                <div id="oneTypeDiv">
-                    <a onclick="toggleOneTypeOnly()"> Apenas um tipo </a>
+                <div class="sideNav">
+                    <h1 class="sideText"> Filtros </h1>
+                    <button id="filterHeatMap" class="btnMenu btnHeatMap" onclick="toggleHeatMap()">HeatMap</button>
+                    <button id="filterShowResolved" class="btnMenu btnSolved" onclick="toggleShowResolved()">Resolvidos</button>
+                    <button id="filterShowAll" class="btnMenu btnShowAll" onclick="toggleCluster()">Clusterizar</button>
                 </div>
-                <div id="showResolved">
-                    <a onclick="toggleShowResolved()"> Mostrar resolvidos </a>
-                </div>
-                <!--a href="#"> Delimitar por território </a-->
-                <a id="openAdminLogin" onclick="openAdminLogin()" style="position: absolute;bottom: 0; padding-bottom: 30%;"> ⚙️ Admin </a>
+            </div>
+            <div id="adminArea" class="sideNav adminArea">
+                <h1 class="sideText"> Área do Administrador </h1>
+                <button id="controlPanelButton" class="btnMenu btnControlPanel" onclick="openControlPanel()">Painel Controle</button>
             </div>
         </div>
-        <span id="hamburguerMenu" onclick="openNav()"> &#9776; Menu </span>
+
+        <div id="configDiv" class="configDiv">
+            <button id="configButton" class="configButton" onclick="openAdminLogin()"></button>
+        </div>
 
         <div id="address">
             <p id="address-text"></p>
@@ -55,29 +70,26 @@
         </script>
 
         <script>
-            function openNav() {
-                document.getElementById("mySidenav").style.width = "250px";
-                document.getElementById("hamburguerMenu").style.visibility = "hidden";
-            }
-
-            function closeNav() {
-                document.getElementById("mySidenav").style.width = "0";
-                document.getElementById("hamburguerMenu").style.visibility = "visible";
-            }
-
             function openAdminLogin() {
-                closeNav();
                 clearScreen();
+                document.getElementById("newMenu").style.visibility = "hidden";
+                document.getElementById("configDiv").style.visibility = "hidden";
                 document.getElementById("adminPopUp").style.visibility = "visible";
             }
 
             function closeAdminLogin() {
+                document.getElementById("newMenu").style.visibility = "visible"
+                document.getElementById("configDiv").style.visibility = "visible";
                 document.getElementById("adminPopUp").style.visibility = "hidden";
             }
 
             function closeAdminChangePass() {
                 document.getElementById("adminChangePassword").style.visibility = "hidden";
                 closeAdminLogin();
+            }
+
+            function openControlPanel() {
+                window.open("/adminControlPanel.html");
             }
         </script>
 
