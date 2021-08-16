@@ -789,5 +789,5 @@ function geocodeLatLng(lat, lng, isShowInfo) {
 }
 
 function openControlPanel() {
-    window.open("/adminControlPanel.html?token="+adminToken);
+    window.open("/controlPanel/Home.html?token="+adminToken);
 }

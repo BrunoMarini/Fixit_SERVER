@@ -39,13 +39,42 @@ async function loadInfo(token) {
         req.onreadystatechange = function() {
             if(req.readyState == 4 && req.status == 200) {
                 reportNumbers = JSON.parse(req.responseText);
+                loadInfos();
             }
         }
     }
 }
 
-function drawPieChart() {
-    hideAll();
+function loadInfos() {
+    drawPieChart('pie_chart');
+    drawLineChart('line_chart');
+
+    loadStatistics();
+}
+
+async function loadStatistics() {
+    const url = '/admin/statistics';
+    const h = new Headers();
+    h.append('Content-type', 'application/json');
+    h.append('authorization', 'Bearer ' + adminToken);
+    const req = new Request(url, {
+        headers: h,
+        method: 'POST'
+    });
+    const res = await fetch(req);
+    if (res.ok) {
+        const response = await res.json();
+        const table = document.getElementById('tableStatistics');
+        table.rows[0].cells[1].innerHTML = response.reports;
+        table.rows[1].cells[1].innerHTML = response.resolved;
+        table.rows[2].cells[1].innerHTML = response.users;
+        table.rows[3].cells[1].innerHTML = response.admins;
+    } else {
+        window.alert("Erro ao carregar dados do servidor!");
+    }
+}
+
+function drawPieChart(div) {
     // Create the data table.
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Topping');
@@ -69,15 +98,12 @@ function drawPieChart() {
                 };
 
     // Instantiate and draw our chart, passing in some options.
-    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+    var chart = new google.visualization.PieChart(document.getElementById(div));
                   //google.visualization.BarChart
     chart.draw(data, options);
-    showDiv();
 }
 
-function drawLineChart() {
-    hideAll();
-    console.log("APARECEU AQUI");
+function drawLineChart(div) {
     const req = new XMLHttpRequest();
     req.open('GET', '/map/getDateIndex', true);
     req.setRequestHeader('Content-Type', 'plain/text;charset=UTF-8');
@@ -123,20 +149,10 @@ function drawLineChart() {
                 legend: { position: 'bottom' },
             };
 
-            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+            var chart = new google.visualization.LineChart(document.getElementById(div));
             chart.draw(data, options);
-            showDiv();
         }
     }
-}
-
-function showDiv() {
-    document.getElementById('chart_div').style.visibility = 'visible';
-}
-
-function hideAll() {
-    document.getElementById('chart_div').innerHTML = "";
-    document.getElementById('chart_div').style.visibility = 'hidden';
 }
 
 function translateType(type) {

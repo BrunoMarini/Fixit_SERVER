@@ -140,6 +140,19 @@ router.post("/deleteReport", async (req, res) => {
     return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS));
 });
 
+router.post('/statistics', async (req, res) => {
+    if (await Utils.isAdminValid(req)) {
+        const rep = await ReportModel.countDocuments();
+        const rev = await ResolvedPositionModel.countDocuments();
+        const usr = await UserModel.countDocuments();
+        const adm = await AdminModel.countDocuments();
+        const s = { reports: rep, resolved: rev, users: usr, admins: adm };
+        return res.status(Constants.HTTP_OK).json(s);
+    } else {
+        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+});
+
 router.post("/resolveReport", async (req, res) => {
     console.log("[Server] Resolve Location");
 
