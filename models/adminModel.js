@@ -24,6 +24,16 @@ const AdminSchema = mongoose.Schema({
     password: {
         type: String
     },
+    resolved: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    deleted: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     status: {
         type: String,
         enum: ['Pending', 'FirstLogin', 'Active'],

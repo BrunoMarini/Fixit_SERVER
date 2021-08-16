@@ -66,6 +66,16 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.post("/validate", async (req, res) => {
+    console.log("[Server] Validate admin");
+    const admin = await Utils.isAdminValid(req);
+    if (admin) {
+        return res.status(Constants.HTTP_OK).json(Utils.createJson(Constants.MESSAGE_SUCCESS, admin.token));
+    } else {
+        return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
+    }
+});
+
 router.post("/changePassword", async (req, res) => {
     console.log("[Server] Admin change password");
     const adm = await Utils.isAdminPasswordChangeRequested(req);
@@ -112,6 +122,8 @@ router.post("/deleteReport", async (req, res) => {
             PositionModel.deleteOne({ reports: report.reportId }, function(err) {
                 if(err) console.log(err);
                 console.log("[Server] Position deleted successfully!");
+                admin.deleted += 1;
+                admin.save();
             });
         }
     } else {
@@ -143,6 +155,9 @@ router.post("/resolveReport", async (req, res) => {
 
     deleteReportsAndUpdateUserInfo(position.reports);
     savePositionResolved(position);
+
+    admin.resolved += 1;
+    admin.save();
 
     return res.status(Constants.HTTP_OK).json(Utils.MESSAGE_SUCCESS);
 });

@@ -1,7 +1,26 @@
+let adminToken = undefined;
 let reportNumbers;
 let currentDisplay = "text";
 
-function loadInfo() {
+async function loadInfo(token) {
+    let url = '/admin/validate';
+    let h = new Headers();
+    h.append('Content-type', 'application/json');
+    h.append('authorization', 'Bearer ' + token);
+
+    let req = new Request(url, {
+        headers: h,
+        method: 'POST'
+    });
+    const res = await fetch(req);
+    if (!res.ok) {
+        window.alert("Admin not authorized")
+        window.close()
+    }
+
+    const response = await res.json();
+    adminToken = response.token;
+
     // Load the Visualization API and the corechart package.
     google.charts.load('current', {'packages':['corechart']});
 

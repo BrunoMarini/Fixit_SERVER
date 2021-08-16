@@ -787,3 +787,7 @@ function geocodeLatLng(lat, lng, isShowInfo) {
       })
       .catch((e) => window.alert("Geocoder failed due to: " + e));
 }
+
+function openControlPanel() {
+    window.open("/adminControlPanel.html?token="+adminToken);
+}

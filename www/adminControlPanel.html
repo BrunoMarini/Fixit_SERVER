@@ -12,7 +12,9 @@
 <header>
   <h2> FixIt - Painel de Controle </h2>
   <script>
-      loadInfo();
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      loadInfo(token);
   </script>
 </header>
 
