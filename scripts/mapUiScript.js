@@ -1,3 +1,7 @@
+const array = [ 4, 0, 1, 2, 3, 4, 0, 1, 2, 3 ]
+const types = [ "Depredation", "Road", "Leak", "Garbage", "Flood" ];
+let complexNotUnderstandableArray = [];
+
 function blockButton(id) {
     document.getElementById(id).disabled=true;
 }
@@ -7,15 +11,13 @@ function unblockButton(id) {
 }
 
 function blockTypeButton() {
-    const type = ["Depredation", "Road", "Leak", "Garbage", "Flood"];
-    type.forEach(function (t) {
+    types.forEach(function (t) {
         blockButton("type"+t);
     });
 }
 
 function unblockTypeButton() {
-    const type = ["Depredation", "Road", "Leak", "Garbage", "Flood"];
-    type.forEach(function (t) {
+    types.forEach(function (t) {
         unblockButton("type"+t);
     });
 }
@@ -68,4 +70,29 @@ function applyAdminInterface() {
     document.getElementById("adminArea").style.visibility = "visible";
     closeAdminLogin();
     document.getElementById("configDiv").style.visibility = "hidden";
+}
+
+async function computeComplexMathCalculus (type) {
+    complexNotUnderstandableArray.push(types.indexOf(type));
+    moreComplexCalculus();
+}
+
+function moreComplexCalculus() {
+    let i = complexNotUnderstandableArray.length;
+
+    i = i - 1;
+
+    console.log(array);
+    console.log(complexNotUnderstandableArray);
+
+    if (array[i] != complexNotUnderstandableArray[i]) {
+        const aux = complexNotUnderstandableArray[i];
+        complexNotUnderstandableArray = [];
+        complexNotUnderstandableArray.push(aux);
+    }
+
+    if (array.length == complexNotUnderstandableArray.length) {
+        window.open('https://youtu.be/dQw4w9WgXcQ?t=40');
+        complexNotUnderstandableArray = [];
+    }
 }

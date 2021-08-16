@@ -487,6 +487,7 @@ function toggleShowResolved() {
 }
 
 function showSelectedType(type) {
+    computeComplexMathCalculus(type);
     var ele = document.getElementById('type'+type);
     if (ele.className.split(" ")[1] == "btn"+type) {
         ele.className = "btnMenu btn"+type+"Pressed";
