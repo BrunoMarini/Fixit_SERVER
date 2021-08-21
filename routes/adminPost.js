@@ -141,12 +141,14 @@ router.post("/deleteReport", async (req, res) => {
 });
 
 router.post('/statistics', async (req, res) => {
-    if (await Utils.isAdminValid(req)) {
+    const admin = await Utils.isAdminValid(req);
+    if (admin) {
         const rep = await ReportModel.countDocuments();
         const rev = await ResolvedPositionModel.countDocuments();
         const usr = await UserModel.countDocuments();
         const adm = await AdminModel.countDocuments();
-        const s = { reports: rep, resolved: rev, users: usr, admins: adm };
+        const thisAdm = (await ResolvedPositionModel.find({ adminResponsible: admin.token })).length;
+        const s = { reports: rep, resolved: rev, users: usr, admins: adm, iResolved: thisAdm };
         return res.status(Constants.HTTP_OK).json(s);
     } else {
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));
@@ -167,7 +169,7 @@ router.post("/resolveReport", async (req, res) => {
     }
 
     deleteReportsAndUpdateUserInfo(position.reports);
-    savePositionResolved(position);
+    savePositionResolved(position, admin.token);
 
     admin.resolved += 1;
     admin.save();
@@ -184,7 +186,7 @@ async function deleteReportsAndUpdateUserInfo(rep) {
     }
 }
 
-async function savePositionResolved(pos) {
+async function savePositionResolved(pos, token) {
     const position = {
             type: 'Point',
             coordinates: [pos.location.coordinates[0], pos.location.coordinates[1]]
@@ -204,13 +206,21 @@ async function savePositionResolved(pos) {
     if(resolved) {
         console.log("[Server] Adding resolved position");
         resolved.reports += pos.reports.length;
+
+        const admins = resolved.adminResponsible;
+        if (!admins.includes(token)) {
+            admins.push(token);
+            resolved.adminResponsible = admins;
+        }
+
         resolved.save();
     } else {
         console.log("[Sever] New resolved position");
         const res = new ResolvedPositionModel({
             type: pos.type,
             location: pos.location,
-            reports: pos.reports.length
+            reports: pos.reports.length,
+            adminResponsible: [ token ]
         });
         res.save();
     }

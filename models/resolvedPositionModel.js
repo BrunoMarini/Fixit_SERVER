@@ -20,6 +20,9 @@ const ResolvedPositionSchema = mongoose.Schema({
     reports: {
         type: Number,
         required: true
+    },
+    adminResponsible: {
+        type: [ String ]
     }
 });
 

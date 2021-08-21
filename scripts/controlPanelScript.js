@@ -66,7 +66,7 @@ async function loadStatistics() {
         const response = await res.json();
         const table = document.getElementById('tableStatistics');
         table.rows[0].cells[1].innerHTML = response.reports;
-        table.rows[1].cells[1].innerHTML = response.resolved;
+        table.rows[1].cells[1].innerHTML = response.resolved + " (" + response.iResolved + " marcado(s) por você)";
         table.rows[2].cells[1].innerHTML = response.users;
         table.rows[3].cells[1].innerHTML = response.admins;
     } else {
