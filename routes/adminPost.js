@@ -143,12 +143,31 @@ router.post("/deleteReport", async (req, res) => {
 router.post('/statistics', async (req, res) => {
     const admin = await Utils.isAdminValid(req);
     if (admin) {
-        const rep = await ReportModel.countDocuments();
-        const rev = await ResolvedPositionModel.countDocuments();
-        const usr = await UserModel.countDocuments();
-        const adm = await AdminModel.countDocuments();
+        const posReportedOpen = await PositionModel.countDocuments();
+
+        const resolvedPositionModel = await ResolvedPositionModel.find();
+        const posResolved = resolvedPositionModel.length;
+
+        let counter = 0;
+        for (let i = 0; i < resolvedPositionModel.length; i++) {
+            counter += resolvedPositionModel[i].reports;
+        }
+        let reportsPerformed = await ReportModel.countDocuments();
+        reportsPerformed += counter;
+
+        const activeUsers = await UserModel.countDocuments();
+        const activeAdmins = await AdminModel.countDocuments();
         const thisAdm = (await ResolvedPositionModel.find({ adminResponsible: admin.token })).length;
-        const s = { reports: rep, resolved: rev, users: usr, admins: adm, iResolved: thisAdm };
+
+        const s = {
+            positionsOpen: posReportedOpen,
+            positionResolved: posResolved,
+            reports: reportsPerformed,
+            users: activeUsers,
+            admins: activeAdmins,
+            iResolved: thisAdm
+        };
+
         return res.status(Constants.HTTP_OK).json(s);
     } else {
         return res.status(Constants.HTTP_FORBIDDEN).json(Utils.createJson(Constants.MESSAGE_NOT_AUTHORIZED));

@@ -64,11 +64,21 @@ async function loadStatistics() {
     const res = await fetch(req);
     if (res.ok) {
         const response = await res.json();
+
+        /**
+         * Posições reportadas em aberto |  X
+         * Posições resolvedidas         |  Y
+         * Reportes realizados           |  Z
+         * Usuários ativos               |  H
+         * Administradores ativos        |  K
+         */
+
         const table = document.getElementById('tableStatistics');
-        table.rows[0].cells[1].innerHTML = response.reports;
-        table.rows[1].cells[1].innerHTML = response.resolved + " (" + response.iResolved + " marcado(s) por você)";
-        table.rows[2].cells[1].innerHTML = response.users;
-        table.rows[3].cells[1].innerHTML = response.admins;
+        table.rows[0].cells[1].innerHTML = response.positionsOpen;
+        table.rows[1].cells[1].innerHTML = response.positionResolved + " (" + response.iResolved + " marcado(s) por você)";
+        table.rows[2].cells[1].innerHTML = response.reports;
+        table.rows[3].cells[1].innerHTML = response.users;
+        table.rows[4].cells[1].innerHTML = response.admins;
     } else {
         window.alert("Erro ao carregar dados do servidor!");
     }
