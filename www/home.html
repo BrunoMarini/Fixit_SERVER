@@ -75,6 +75,15 @@
                 document.getElementById("newMenu").style.visibility = "hidden";
                 document.getElementById("configDiv").style.visibility = "hidden";
                 document.getElementById("adminPopUp").style.visibility = "visible";
+                setupEnterListener();
+            }
+
+            function setupEnterListener() {
+                document.getElementById("adminLoginPass").onkeypress = function(e) {
+                    if (e.keyCode == 13) {
+                        performAdminLogin();
+                    }
+                }
             }
 
             function closeAdminLogin() {
@@ -90,25 +99,26 @@
         </script>
 
         <div id="adminPopUp" class="adminPopUp">
-            <div id="adminPopUpContent" class="reveal-modal">
-                <div>
-                    <a class="closeAdminPopUp" onclick="closeAdminLogin()">&times;</a>
-                    <h2> Login de Administrador </h2>
-                </div>
-                <p>
-                    <form>
-                        <label for="fname"> Login </label><br>
-                        <input type="text" id="fname" name="fname"><br><br>
-                        <label for="lname"> Senha </label><br>
-                        <input type="password" id="lname" name="lname"><br><br>
-                    </form>
-                    <button onclick="performAdminLogin()"> Logar </button>
-                    <br><br><br>
-                    Faz parde de uma instituição interessada em ser adminitradora do sistem?
-                    <a href="/register/Home.html"> CLIQUE AQUI</a>
-                </p>
+        <div class="adminLogin">
+            <div class="headerAdminLogin">
+              <h1> Login </h1>
             </div>
-        </div>
+            <div class="adminLoginInputType">
+              <input id="adminLoginName" class="adminInput" type="text" name="Username" placeholder="Username"/>
+            </div>
+            <div class="adminLoginInputType">
+              <input id="adminLoginPass" class="adminInput" type="password" name="Password" placeholder="Password"/>
+            </div>
+            <div class="loginBtn">
+              <button class="adminLoginBtn" onclick="performAdminLogin()"> Login </button>
+            </div>
+            <div class="loginBtn">
+                <a class="loginClose" onclick="closeAdminLogin()"> Fechar </a>
+            </div>
+            <div class="bottomText">
+                <a href="/register/Home.html" class="adminLoginBottomText"> Faz parde de uma instituição interessada em ser adminitradora do sistem? CLIQUE AQUI </a>
+            </div>
+        </div></div>
 
         <div id="adminChangePassword" class="adminPopUp">
             <div id="adminPopUpContent" class="reveal-modal">

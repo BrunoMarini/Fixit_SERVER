@@ -550,8 +550,8 @@ function refreshMap() {
 }
 
 async function performAdminLogin() {
-    const login = await document.getElementById('fname').value;
-    const pass = await document.getElementById('lname').value;
+    const login = await document.getElementById('adminLoginName').value;
+    const pass = await document.getElementById('adminLoginPass').value;
 
     let url = '/admin/login';
     let h = new Headers();
