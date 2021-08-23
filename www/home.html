@@ -121,22 +121,25 @@
         </div></div>
 
         <div id="adminChangePassword" class="adminPopUp">
-            <div id="adminPopUpContent" class="reveal-modal">
-                <div>
-                    <a class="closeAdminPopUp" onclick="closeAdminChangePass()">&times;</a>
-                    <h2> Alterar senha </h2>
+            <div class="adminLogin">
+                <div class="headerAdminLogin">
+                  <h1> Alterar senha </h1>
                 </div>
-                <p>
-                    <form>
-                        <label for="fname"> Senha antiga </label><br>
-                        <input type="password" id="fOldPass" name="fOldPass"><br><br>
-                        <label for="lname"> Nova Senha </label><br>
-                        <input type="password" id="fNewPass" name="fNewPass"><br><br>
-                        <label for="lname"> Confirmar Senha </label><br>
-                        <input type="password" id="fConfirmPass" name="fConfirmPass"><br><br>
-                    </form>
-                    <button onclick="performAdminPasswordChange()"> Trocar </button>
-                </p>
+                <div class="adminLoginInputType">
+                  <input id="adminOldPass" class="adminInput" type="password" name="Username" placeholder="Senha antiga"/>
+                </div>
+                <div class="adminLoginInputType">
+                  <input id="adminNewPass" class="adminInput" type="password" name="Password" placeholder="Nova senha"/>
+                </div>
+                 <div class="adminLoginInputType">
+                  <input id="adminConfirmpass" class="adminInput" type="password" name="Password" placeholder="Confirmar senha"/>
+                </div>
+                <div class="loginBtn">
+                  <button class="adminLoginBtn" onclick="performAdminPasswordChange()"> Alterar </button>
+                </div>
+                <div class="loginBtn">
+                    <a class="loginClose" onclick="closeAdminChangePass()"> Fechar </a>
+                </div>
             </div>
         </div>
 

@@ -583,9 +583,9 @@ async function performAdminLogin() {
 }
 
 async function performAdminPasswordChange() {
-    const oldPass = await document.getElementById('fOldPass').value;
-    const newPass = await document.getElementById('fNewPass').value;
-    const confirm = await document.getElementById('fConfirmPass').value;
+    const oldPass = await document.getElementById('adminOldPass').value;
+    const newPass = await document.getElementById('adminNewPass').value;
+    const confirm = await document.getElementById('adminConfirmpass').value;
 
     if (newPass == confirm) {
         let url = '/admin/changePassword';
