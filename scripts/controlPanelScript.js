@@ -38,18 +38,63 @@ async function loadInfo(token) {
 
         req.onreadystatechange = function() {
             if(req.readyState == 4 && req.status == 200) {
-                reportNumbers = JSON.parse(req.responseText);
-                loadInfos();
+                const data = JSON.parse(req.responseText);
+                reportNumbers = data.data;
+                loadInfos(data);
             }
         }
     }
 }
 
-function loadInfos() {
-    drawPieChart('pie_chart');
+function loadInfos(data) {
+    drawPieChart('Problemas Reportados', createPieChartData(reportNumbers), 'pie_chart');
     drawLineChart('line_chart');
 
     loadStatistics();
+    loadFirstDateInterval(data.firstDate, data.lastDate);
+}
+
+async function loadFirstDateInterval(start, end) {
+    start = formatStringToDate(start);
+    end = formatStringToDate(end);
+    const interval = start + " - " + end;
+    console.log("First interval = " + interval);
+    $('input[name="daterange"]').val(interval);
+    loadDateInterval(start, end);
+}
+
+async function loadDateInterval(start, end) {
+    const url = '/map/getReportInvertal';
+    const h = new Headers();
+    h.append('Content-type', 'application/json');
+
+    let aux = start.split("/");
+    aux = aux[2] + "/" + aux[1] + "/" + aux[0];
+    start = aux;
+
+    aux = end.split("/");
+    aux = aux[2] + "/" + aux[1] + "/" + aux[0];
+    end = aux;
+
+    const json = {
+        startDate: start,
+        endDate: end
+    };
+
+    const req = new Request(url, {
+        headers: h,
+        body: JSON.stringify(json),
+        method: 'POST'
+    });
+
+    const response = await fetch(req);
+
+    if (response.ok) {
+        const resJson = await response.json();
+        console.log(resJson);
+        drawPieChart('Relação Aberto x Resolvido', createPieChartData(resJson.resolutionInterval), 'pie_chart_open_resolved');
+        drawPieChart('Tipos presentes no periodo', createPieChartData(resJson.typeInterval), 'pie_chart_type_period');
+    }
 }
 
 async function loadStatistics() {
@@ -84,23 +129,25 @@ async function loadStatistics() {
     }
 }
 
-function drawPieChart(div) {
-    // Create the data table.
-    var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Topping');
-    data.addColumn('number', 'Slices');
-    
+function createPieChartData(data) {
+    const table = new google.visualization.DataTable();
+    table.addColumn('string', 'Topping');
+    table.addColumn('number', 'Slices');
+
     const rows = [];
-    for(let i = 0; i < reportNumbers.length; i++) {
+    for (let i = 0; i < data.length; i++) {
         const temp = [];
-        temp.push(translateType(reportNumbers[i].type));
-        temp.push(reportNumbers[i].length);
+        temp.push(translateType(data[i].type));
+        temp.push(data[i].value);
         rows.push(temp);
     }
-    
-    data.addRows(rows);
+    table.addRows(rows);
+    return table;
+}
+
+function drawPieChart(title, table, div) {
     // Set chart options
-    var options = {'title':'Problemas reportados',
+    var options = {'title': title,
                     'width': 'auto',
                     'height': 500,
                     'text-align': 'center',
@@ -109,8 +156,7 @@ function drawPieChart(div) {
 
     // Instantiate and draw our chart, passing in some options.
     var chart = new google.visualization.PieChart(document.getElementById(div));
-                  //google.visualization.BarChart
-    chart.draw(data, options);
+    chart.draw(table, options);
 }
 
 function drawLineChart(div) {
@@ -173,5 +219,14 @@ function translateType(type) {
         case 'Garbage':     return 'Depósito de lixo';
         case 'Flood':       return 'Alagamento';
         case 'Multiple':    return 'Multiplos Tipos';
+        case 'Resolved':    return 'Resolvidos';
+        case 'Reported':    return 'Reportados';
+        default:            return 'SymbolNotFound';
     }
+}
+
+function formatStringToDate(date) {
+    date = new Date(date);
+    date = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    return date;
 }

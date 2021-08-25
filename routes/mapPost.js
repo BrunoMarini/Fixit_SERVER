@@ -49,24 +49,39 @@ router.post('/getPoint/', async (req, res) => {
 router.get('/getReportNumbers', async (req, res) => {
     const depredations = await PositionModel.find();
 
-    const responseJson = [];
+    const response = [];
     let newValue;
     for(let i = 0; i < depredations.length; i++) {
         newValue = true;
-        for(let j = 0; j < responseJson.length; j++) {
-            if(responseJson[j].type == depredations[i].type) {
-                responseJson[j].length += depredations[i].reports.length;
+        for(let j = 0; j < response.length; j++) {
+            if(response[j].type == depredations[i].type) {
+                response[j].value += depredations[i].reports.length;
                 newValue = false;
                 break;
             }
         }
         if(newValue) {
-            responseJson.push({
+            response.push({
                 type: depredations[i].type,
-                length: depredations[i].reports.length
+                value: depredations[i].reports.length
             });
         }
     }
+
+    const reports = (await ReportModel.find().sort({ date: 1 }))[0];
+    const resolved = (await ResolvedPositionModel.find().sort({ date: 1 }))[0];
+
+    let date = reports.date;
+    if (reports.date > resolved.date) {
+        date = resolved.date;
+    }
+
+    const responseJson = {
+        firstDate: date,
+        lastDate: new Date(),
+        data: response
+    }
+
     return res.status(Constants.HTTP_OK).json(responseJson);
 });
 
@@ -98,6 +113,60 @@ router.get('/getDateIndex', async(req, res) => {
         }
     }
     res.status(200).json(responseJson);
+});
+
+router.post('/getReportInvertal', async (req, res) => {
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+    console.log("[Server] Get reports in date interval " + startDate + " - " + endDate);
+
+    const resolved = await ResolvedPositionModel.
+                        find({ date: { $gte: startDate, $lte: endDate }}).
+                        sort({ date: 1 });
+    const reported = await ReportModel.
+                        find({ date: { $gte: startDate, $lte: endDate }}).
+                        sort({ date: 1 })
+
+    const typesReported = [];
+
+    for (let i = 0; i < resolved.length; i++) {
+        let found = false;
+        for (let j = 0; j < typesReported.length; j++) {
+            if (typesReported[j].type == resolved[i].type) {
+                typesReported[j].value += 1;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            typesReported.push({ type: resolved[i].type, value: 1 });
+        }
+    }
+    for (let i = 0; i < reported.length; i++) {
+        let found = false;
+        let typeReported;
+        for (let j = 0; j < typesReported.length; j++) {
+            const pos = await PositionModel.findOne({ reports: reported[i].reportId });
+            typeReported = pos.type;
+            if (typeReported == typesReported[j].type) {
+                typesReported[j].value += 1;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            typesReported.push({ type: typeReported, value: 1 });
+        }
+    }
+
+    const responseJson = {
+        resolutionInterval: [{ type: 'Resolved', value: resolved.length },
+                                { type: 'Reported', value: reported.length }],
+        typeInterval: typesReported
+    }
+
+    return res.status(Constants.HTTP_OK).json(responseJson);
+
 });
 
 function increaseReport(jsonArray, d, t) {
